@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ListadoBienes" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="41eaaf7b-d5db-4939-9c14-1cc10994f681">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="desde" class="java.lang.Integer"/>
+	<parameter name="hasta" class="java.lang.Integer"/>
+	<parameter name="condicion" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT NROINVENTARIO,DESCRIPCION,VALOR
+FROM BIEN
+WHERE NROINVENTARIO >= $P{desde}
+ORDER BY NROINVENTARIO]]>
+	</queryString>
+	<field name="NROINVENTARIO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DESCRIPCION" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="VALOR" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="fecha" class="java.util.Date">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<variable name="SUMA" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{VALOR}]]></variableExpression>
+	</variable>
+	<variable name="CANTIDAD" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{VALOR}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="96" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="95" width="555" height="1" uuid="6da1879b-ed19-455f-b0cc-b6ab0b22cf98"/>
+			</line>
+			<image>
+				<reportElement x="0" y="0" width="555" height="50" uuid="7c2e46e1-97ec-46c5-b625-52b12f759937"/>
+				<imageExpression><![CDATA["c:/Patrimonio/Reportes/header.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="-1" y="50" width="556" height="20" uuid="7a57325f-869f-41d1-833d-120bb0885f38"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LISTADO BIENES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="70" width="41" height="20" uuid="1b27093c-43e6-4e8c-b65f-6bc27a064c67"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[N INV]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="41" y="70" width="100" height="20" uuid="08be8c74-0bf3-4729-908a-0ee34aea738c"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="76" width="100" height="20" uuid="1701b392-6f6f-41fe-a654-b7d5e90be85c"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[VALOR]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="41" height="20" uuid="8083f4b6-fb84-4e4f-a3c1-3956701a8c3c"/>
+				<textFieldExpression><![CDATA[$F{NROINVENTARIO}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="41" y="0" width="414" height="20" uuid="afe2e62f-f5e3-4d88-8d17-b236f4bae844"/>
+				<textFieldExpression><![CDATA[$F{DESCRIPCION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00">
+				<reportElement x="455" y="0" width="100" height="20" uuid="d4442b65-8373-4747-80dd-dd8466602332"/>
+				<textFieldExpression><![CDATA[$F{VALOR}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="27" splitType="Stretch">
+			<textField>
+				<reportElement x="455" y="6" width="100" height="20" uuid="d5b7fb65-9b09-4a55-85b5-e45577e65e15"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="0" y="6" width="100" height="20" uuid="0ae942e1-89a8-4f90-bf36-a21f43477fad"/>
+				<textFieldExpression><![CDATA[$V{fecha}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="f9374bc7-d455-4cbc-9688-51be86c939b0"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="248" y="3" width="100" height="20" uuid="feee9174-7695-4cec-8c35-f738005dec84"/>
+				<textFieldExpression><![CDATA[$V{CANTIDAD}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00">
+				<reportElement x="425" y="3" width="100" height="20" uuid="1b00cd9f-19e2-497a-ba83-6c5120df1c13"/>
+				<textFieldExpression><![CDATA[$V{SUMA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="189" y="3" width="59" height="20" uuid="9f293eb0-77e1-4c3a-80d4-25486c1efcb0"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="379" y="3" width="46" height="20" uuid="564d65ff-c281-4bde-ac8e-66d2c0e75910"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

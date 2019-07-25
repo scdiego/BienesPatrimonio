@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="BienesAlta" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a09bcc10-5b04-4407-a199-ee7feb9a2a54">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT
+NROINVENTARIO,
+DATE_FORMAT(FECHAALTA,'%d/%m/%Y') as FECHAALTA,
+NROEXPEDIENTEALTA,
+DESCRIPCION,
+RESOLUCIONALTA,
+VALOR
+FROM vw_bienes_baja
+ORDER BY NROINVENTARIO]]>
+	</queryString>
+	<field name="NROINVENTARIO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="FECHAALTA" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="NROEXPEDIENTEALTA" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DESCRIPCION" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="RESOLUCIONALTA" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="VALOR" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="fecha" class="java.util.Date">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="103" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="101" width="802" height="1" uuid="0c441071-d02f-493f-b1a4-81b24b01e6da"/>
+			</line>
+			<staticText>
+				<reportElement x="602" y="82" width="100" height="20" uuid="13ec4a5e-4790-400e-aa31-bf2cbd0be365"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESOLUCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="102" y="80" width="100" height="20" uuid="52d00e6d-9bf6-42a2-8009-8c2aaa3b9a41"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[EXPTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="39" y="80" width="63" height="20" uuid="371d1f6f-2869-4c43-a1ce-55d4b04cab7b"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="202" y="80" width="100" height="20" uuid="1a3126a1-943a-4647-af85-2b09e1c623dd"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="702" y="80" width="100" height="20" uuid="7c989fb0-3124-42e1-b6c6-8a19bc7b3d22"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[VALOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="80" width="39" height="20" uuid="6474dc9c-2bb4-4f37-a29f-8328db126fa5"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[N INV]]></text>
+			</staticText>
+			<image hAlign="Center">
+				<reportElement x="102" y="0" width="628" height="55" uuid="54e7a061-8312-45d4-b52c-11c94e0d903d"/>
+				<imageExpression><![CDATA["/datos/proyectos/patrimonio/src/Reportes/header.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="2" y="61" width="800" height="20" uuid="ed73c147-85c3-491d-9e6e-b9664cf32481"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LISTADO BIENES DE ALTA]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="28" splitType="Stretch">
+			<textField>
+				<reportElement x="2" y="2" width="37" height="20" uuid="cb269b55-1c09-4ffb-a167-47df58cb39ef"/>
+				<textFieldExpression><![CDATA[$F{NROINVENTARIO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="41" y="2" width="61" height="20" uuid="52bea204-ce58-4abb-852e-b30c0bdfcaad"/>
+				<textFieldExpression><![CDATA[$F{FECHAALTA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="202" y="2" width="400" height="20" uuid="8e913be9-8cbb-4d89-93fb-c011d8364b6f"/>
+				<textFieldExpression><![CDATA[$F{DESCRIPCION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="602" y="2" width="100" height="20" uuid="cc7a2951-81ef-4f52-89ea-f163ef8e8bbb"/>
+				<textFieldExpression><![CDATA[$F{RESOLUCIONALTA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="702" y="2" width="100" height="20" uuid="afe1445a-ee5d-46dd-88c6-2d13876e1cae"/>
+				<textFieldExpression><![CDATA[$F{VALOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="102" y="2" width="100" height="20" uuid="e96f4087-b4d9-44a0-91cc-ecf6c5013ec3"/>
+				<textFieldExpression><![CDATA[$F{NROEXPEDIENTEALTA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="29" splitType="Stretch">
+			<textField>
+				<reportElement x="702" y="3" width="100" height="20" uuid="34f62054-094c-4e85-ab83-e89389e0286a"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="2" y="3" width="100" height="20" uuid="5a4b2e3b-c040-4006-ba29-e6fa02ebe893"/>
+				<textFieldExpression><![CDATA[$V{fecha}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="802" height="1" uuid="ba7d766e-eb40-42e4-b91e-b1316f8042a5"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

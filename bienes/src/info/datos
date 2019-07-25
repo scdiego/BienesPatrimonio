@@ -1,0 +1,26 @@
+git rm -r --cached src/META-INF/
+git commit -m 
+
+#varialbes de entorno
+#192.168.15.3
+SERVERPATRIMONIO 
+
+#patrimonio
+BASEPATRIMONIO
+
+#patrimonio
+USERPATRIMONIO
+
+#V4lh4lla
+PASSPATRIMONIO
+
+#carpeta donde se instala /Reportes Presentacion.FrmLogIn
+RUTAREPORTES
+
+solo consultas no crea nuevos no guarda no borra 
+carlaaguirre066@gmail.com
+
+
+nuevo baja
+admin
+
