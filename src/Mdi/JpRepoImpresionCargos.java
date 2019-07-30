@@ -191,6 +191,7 @@ public class JpRepoImpresionCargos extends javax.swing.JPanel {
     }
     
     public void mostrarReporte(){
+        this.parametros.put("ruta", System.getenv().get("RUTAREPORTES"));
         String vpath = System.getenv().get("RUTAREPORTES")+"/"+this.reportName+".jasper";        
         AbsJasperReports.createReport(conn, vpath,parametros);
         AbsJasperReports.showViewer();

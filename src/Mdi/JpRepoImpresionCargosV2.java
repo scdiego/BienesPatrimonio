@@ -223,7 +223,7 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         
         
         
-
+        this.parametros.put("ruta", System.getenv().get("RUTAREPORTES"));
         String vpath = System.getenv().get("RUTAREPORTES")+"/"+this.reportName+".jasper";
         //String vpath = "/home/diego/proyectos/patrimonio/src/Reportes/"+this.reportName+".jasper";
         this.inicializarParametros(idReporte,"");

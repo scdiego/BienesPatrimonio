@@ -8,13 +8,14 @@
 	<parameter name="condicion" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="ruta" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT NROINVENTARIO,DESCRIPCION,VALOR
+		<![CDATA[SELECT LPAD( NROINVENTARIO, 6, '0' ) as NROINVENTARIO,DESCRIPCION,VALOR
 FROM BIEN
 WHERE NROINVENTARIO >= $P{desde}
 ORDER BY NROINVENTARIO]]>
 	</queryString>
-	<field name="NROINVENTARIO" class="java.lang.Integer">
+	<field name="NROINVENTARIO" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="DESCRIPCION" class="java.lang.String">
@@ -45,7 +46,7 @@ ORDER BY NROINVENTARIO]]>
 			</line>
 			<image>
 				<reportElement x="0" y="0" width="555" height="50" uuid="7c2e46e1-97ec-46c5-b625-52b12f759937"/>
-				<imageExpression><![CDATA["c:/Patrimonio/Reportes/header.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{ruta}+"header.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="-1" y="50" width="556" height="20" uuid="7a57325f-869f-41d1-833d-120bb0885f38"/>

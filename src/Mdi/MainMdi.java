@@ -28,6 +28,7 @@ public class MainMdi extends javax.swing.JFrame {
     private jpFormCambiarPass objFormCambiarPass = new jpFormCambiarPass();
     private JpFormResponsable objFormResponsable = new JpFormResponsable();
     private FrmCvsImport objFrmImportCvs = new FrmCvsImport();
+    private FrmImpresionEtiquetas objFrmImpresionEtiquetas = new FrmImpresionEtiquetas();
     
 
     
@@ -83,6 +84,12 @@ public class MainMdi extends javax.swing.JFrame {
         objFrmImportCvs.setUser(this.user);
         objFrmImportCvs.setSize(800,550);
         jifFrmImportCvs.setSize(800,550);
+        
+        jifFrmImpresionEtiquetas.setContentPane(objFrmImportCvs);
+        objFrmImpresionEtiquetas.setParent(this); 
+        objFrmImpresionEtiquetas.setUser(this.user);
+        objFrmImpresionEtiquetas.setSize(800,550);
+        jifFrmImpresionEtiquetas.setSize(800,550);
         
         // Reportes //
         jifRepoBienes.setContentPane(objRepoBienes);
@@ -173,6 +180,10 @@ public class MainMdi extends javax.swing.JFrame {
          objFormBajaBien.inicializarCampos();
          jifFormBajaBien.setVisible(true);
     }
+    
+    public void ocultarImpresionEtiquetas(){
+        this.jifFrmImpresionEtiquetas.setVisible(false);
+    }
         
 
     /**
@@ -196,6 +207,7 @@ public class MainMdi extends javax.swing.JFrame {
         jifCambiarPass = new javax.swing.JInternalFrame();
         jifFormResponsable = new javax.swing.JInternalFrame();
         jifFrmImportCvs = new javax.swing.JInternalFrame();
+        jifFrmImpresionEtiquetas = new javax.swing.JInternalFrame();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         jmiFrmBien = new javax.swing.JMenuItem();
@@ -213,6 +225,7 @@ public class MainMdi extends javax.swing.JFrame {
         jmiSalir = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -442,7 +455,23 @@ public class MainMdi extends javax.swing.JFrame {
         );
 
         desktopPane.add(jifFrmImportCvs);
-        jifFrmImportCvs.setBounds(290, 220, 24, 32);
+        jifFrmImportCvs.setBounds(290, 220, 50, 32);
+
+        jifFrmImpresionEtiquetas.setVisible(true);
+
+        javax.swing.GroupLayout jifFrmImpresionEtiquetasLayout = new javax.swing.GroupLayout(jifFrmImpresionEtiquetas.getContentPane());
+        jifFrmImpresionEtiquetas.getContentPane().setLayout(jifFrmImpresionEtiquetasLayout);
+        jifFrmImpresionEtiquetasLayout.setHorizontalGroup(
+            jifFrmImpresionEtiquetasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jifFrmImpresionEtiquetasLayout.setVerticalGroup(
+            jifFrmImpresionEtiquetasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        desktopPane.add(jifFrmImpresionEtiquetas);
+        jifFrmImpresionEtiquetas.setBounds(20, 370, 24, 32);
 
         fileMenu.setMnemonic('f');
         fileMenu.setText("Operaciones");
@@ -523,6 +552,14 @@ public class MainMdi extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMenuItem1);
+
+        jMenuItem5.setText("Impresion de Etiquetas");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem5);
 
         jMenuItem2.setText("Libro de Bienes");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -623,6 +660,11 @@ public class MainMdi extends javax.swing.JFrame {
         jifFrmImportCvs.setVisible(true);
     }//GEN-LAST:event_jmiFrmCvsImportActionPerformed
 
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        // TODO add your handling code here:
+        jifFrmImpresionEtiquetas.setVisible(true);
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -666,6 +708,7 @@ public class MainMdi extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
@@ -678,6 +721,7 @@ public class MainMdi extends javax.swing.JFrame {
     private javax.swing.JInternalFrame jifFormResponsable;
     private javax.swing.JInternalFrame jifFormSector;
     private javax.swing.JInternalFrame jifFrmImportCvs;
+    private javax.swing.JInternalFrame jifFrmImpresionEtiquetas;
     private javax.swing.JInternalFrame jifRepoAuditoria;
     private javax.swing.JInternalFrame jifRepoBienes;
     private javax.swing.JInternalFrame jifRepoCargos;

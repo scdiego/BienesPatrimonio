@@ -387,6 +387,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
     private void inicializarParametros(){
         String desde;
         String hasta;
+        this.parametros.put("ruta", System.getenv().get("RUTAREPORTES"));
         switch (this.reportName){           
             case  "ListadoBienesNro":
                 this.parametros.put("Nro", this.txtBusqueda.getText());

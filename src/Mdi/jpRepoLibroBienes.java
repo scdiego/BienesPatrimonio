@@ -180,6 +180,7 @@ public class jpRepoLibroBienes extends javax.swing.JPanel {
     }
     
     public void buscarRegistros(){
+        this.parametros.put("ruta", System.getenv().get("RUTAREPORTES"));
         switch(this.tipoBusqueda){
             case 0:
                 this.reportName = "ListadoBienes";
