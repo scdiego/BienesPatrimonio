@@ -3,9 +3,10 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="ruta" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
-NROINVENTARIO,
+LPAD( NROINVENTARIO, 6, '0' ) as NROINVENTARIO,
 DATE_FORMAT(FECHAALTA,'%d/%m/%Y') as FECHAALTA,
 NROEXPEDIENTEALTA,
 DESCRIPCION,
@@ -14,7 +15,7 @@ VALOR
 FROM vw_bienes_alta
 ORDER BY NROINVENTARIO]]>
 	</queryString>
-	<field name="NROINVENTARIO" class="java.lang.Integer">
+	<field name="NROINVENTARIO" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="FECHAALTA" class="java.lang.String">
@@ -54,21 +55,21 @@ ORDER BY NROINVENTARIO]]>
 				<text><![CDATA[RESOLUCION]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="102" y="80" width="100" height="20" uuid="52d00e6d-9bf6-42a2-8009-8c2aaa3b9a41"/>
+				<reportElement x="175" y="81" width="100" height="20" uuid="52d00e6d-9bf6-42a2-8009-8c2aaa3b9a41"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[EXPTE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="39" y="80" width="63" height="20" uuid="371d1f6f-2869-4c43-a1ce-55d4b04cab7b"/>
+				<reportElement x="112" y="81" width="63" height="20" uuid="371d1f6f-2869-4c43-a1ce-55d4b04cab7b"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[FECHA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="202" y="80" width="100" height="20" uuid="1a3126a1-943a-4647-af85-2b09e1c623dd"/>
+				<reportElement x="275" y="82" width="100" height="20" uuid="1a3126a1-943a-4647-af85-2b09e1c623dd"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
@@ -82,11 +83,11 @@ ORDER BY NROINVENTARIO]]>
 				<text><![CDATA[VALOR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="80" width="39" height="20" uuid="6474dc9c-2bb4-4f37-a29f-8328db126fa5"/>
+				<reportElement x="0" y="80" width="112" height="20" uuid="6474dc9c-2bb4-4f37-a29f-8328db126fa5"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[N INV]]></text>
+				<text><![CDATA[N° DE INVENTARIO]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="61" width="800" height="20" uuid="ed73c147-85c3-491d-9e6e-b9664cf32481"/>
@@ -95,27 +96,27 @@ ORDER BY NROINVENTARIO]]>
 				</textElement>
 				<text><![CDATA[LISTADO BIENES DE ALTA]]></text>
 			</staticText>
-			<image>
-				<reportElement x="102" y="2" width="623" height="59" uuid="d2973448-9552-4cd2-b66c-4df14045dd04"/>
-				<imageExpression><![CDATA["C:\\Patrimonio\\Reportes\\header.png"]]></imageExpression>
+			<image scaleImage="FillFrame" hAlign="Center">
+				<reportElement x="0" y="0" width="802" height="55" uuid="ac937a53-271d-4d2e-a3a1-56851f4dfe05"/>
+				<imageExpression><![CDATA[$P{ruta}+"header.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
 	<detail>
 		<band height="28" splitType="Stretch">
 			<textField>
-				<reportElement x="2" y="2" width="37" height="20" uuid="cb269b55-1c09-4ffb-a167-47df58cb39ef"/>
+				<reportElement x="2" y="2" width="100" height="20" uuid="cb269b55-1c09-4ffb-a167-47df58cb39ef"/>
 				<textFieldExpression><![CDATA[$F{NROINVENTARIO}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="41" y="2" width="61" height="20" uuid="52bea204-ce58-4abb-852e-b30c0bdfcaad"/>
+				<reportElement x="112" y="0" width="61" height="20" uuid="52bea204-ce58-4abb-852e-b30c0bdfcaad"/>
 				<textFieldExpression><![CDATA[$F{FECHAALTA}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement stretchType="RelativeToTallestObject" x="202" y="2" width="400" height="20" uuid="8e913be9-8cbb-4d89-93fb-c011d8364b6f"/>
+				<reportElement stretchType="RelativeToTallestObject" x="275" y="2" width="327" height="20" uuid="8e913be9-8cbb-4d89-93fb-c011d8364b6f"/>
 				<textFieldExpression><![CDATA[$F{DESCRIPCION}]]></textFieldExpression>
 			</textField>
-			<textField pattern="¤ #,##0.00">
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
 				<reportElement x="602" y="2" width="100" height="20" uuid="cc7a2951-81ef-4f52-89ea-f163ef8e8bbb"/>
 				<textFieldExpression><![CDATA[$F{RESOLUCIONALTA}]]></textFieldExpression>
 			</textField>
@@ -123,8 +124,8 @@ ORDER BY NROINVENTARIO]]>
 				<reportElement x="702" y="2" width="100" height="20" uuid="afe1445a-ee5d-46dd-88c6-2d13876e1cae"/>
 				<textFieldExpression><![CDATA[$F{VALOR}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="102" y="2" width="100" height="20" uuid="e96f4087-b4d9-44a0-91cc-ecf6c5013ec3"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="175" y="0" width="100" height="20" uuid="e96f4087-b4d9-44a0-91cc-ecf6c5013ec3"/>
 				<textFieldExpression><![CDATA[$F{NROEXPEDIENTEALTA}]]></textFieldExpression>
 			</textField>
 		</band>

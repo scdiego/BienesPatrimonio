@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ListadoBienes" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="41eaaf7b-d5db-4939-9c14-1cc10994f681">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="208"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="desde" class="java.lang.Integer"/>
 	<parameter name="hasta" class="java.lang.Integer"/>
 	<parameter name="condicion" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="ruta" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT NROINVENTARIO,DESCRIPCION,VALOR
+		<![CDATA[SELECT LPAD( NROINVENTARIO, 6, '0' ) as NROINVENTARIO,DESCRIPCION,VALOR
 FROM BIEN
 ORDER BY NROINVENTARIO]]>
 	</queryString>
-	<field name="NROINVENTARIO" class="java.lang.Integer">
+	<field name="NROINVENTARIO" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="DESCRIPCION" class="java.lang.String">
@@ -44,7 +45,7 @@ ORDER BY NROINVENTARIO]]>
 			</line>
 			<image>
 				<reportElement x="0" y="0" width="555" height="50" uuid="7c2e46e1-97ec-46c5-b625-52b12f759937"/>
-				<imageExpression><![CDATA["c:/Patrimonio/Reportes/header.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{ruta}+"header.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="-1" y="50" width="556" height="20" uuid="7a57325f-869f-41d1-833d-120bb0885f38"/>
@@ -54,14 +55,14 @@ ORDER BY NROINVENTARIO]]>
 				<text><![CDATA[LISTADO BIENES]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="70" width="41" height="20" uuid="1b27093c-43e6-4e8c-b65f-6bc27a064c67"/>
+				<reportElement x="0" y="70" width="112" height="20" uuid="1b27093c-43e6-4e8c-b65f-6bc27a064c67"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[N INV]]></text>
+				<text><![CDATA[N° DE INVENTARIO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="41" y="70" width="100" height="20" uuid="08be8c74-0bf3-4729-908a-0ee34aea738c"/>
+				<reportElement x="112" y="70" width="100" height="20" uuid="08be8c74-0bf3-4729-908a-0ee34aea738c"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
@@ -82,11 +83,11 @@ ORDER BY NROINVENTARIO]]>
 	<detail>
 		<band height="25" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="41" height="20" uuid="8083f4b6-fb84-4e4f-a3c1-3956701a8c3c"/>
+				<reportElement x="0" y="0" width="112" height="20" uuid="8083f4b6-fb84-4e4f-a3c1-3956701a8c3c"/>
 				<textFieldExpression><![CDATA[$F{NROINVENTARIO}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="41" y="0" width="414" height="20" uuid="afe2e62f-f5e3-4d88-8d17-b236f4bae844"/>
+				<reportElement x="112" y="0" width="343" height="20" uuid="afe2e62f-f5e3-4d88-8d17-b236f4bae844"/>
 				<textFieldExpression><![CDATA[$F{DESCRIPCION}]]></textFieldExpression>
 			</textField>
 			<textField pattern="$ #,##0.00">
