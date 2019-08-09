@@ -265,6 +265,8 @@ public class jpRepoBienes extends javax.swing.JPanel {
         campos.add("NOMBRE");
         campos.add("FECHAALTA");
         Object[][] lista = consulta.ejcutarConsulta(sql, campos);
+        Responsable responsable = (Responsable) cmbResponsable.getSelectedItem();
+        this.parametros.put("RESPONSABLE", responsable.getApeyNom());
         mostrarConsulta(lista);
     }    
     private void findByResponsable() {
@@ -401,6 +403,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
                 break; 
             case "ListadoBienesxResponsable":
                 String responsable = this.cmbResponsable.getSelectedItem().toString();
+                
                 this.parametros.put("responsable", responsable);
                 break;
             case "ListadoBienesNroD":

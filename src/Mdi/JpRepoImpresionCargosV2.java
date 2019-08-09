@@ -189,24 +189,10 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         em = getEntityManager();
         em.getTransaction().begin();
         StoredProcedureQuery sp = em.createStoredProcedureQuery("agregarBienesReporte");
-//        StoredProcedureQuery sp2 = em.createStoredProcedureQuery("AGREGA_BIEN_REPORTE");
         
         sp.registerStoredProcedureParameter("bienes", String.class, ParameterMode.IN);
         sp.registerStoredProcedureParameter("id", Integer.class, ParameterMode.OUT);
 
-        //int idResponsable = this.responsable.getId();
-        //sp.setParameter("IDRESPONSABLE", idResponsable);
-        //sp.execute();
-        
-        //final  int idReporte = Integer.parseInt(sp.getOutputParameterValue("IDREPORTE").toString());
-        //em.getTransaction().commit();
-        
-        //https://www.facebook.com/LuliPedotti
-        //https://www.facebook.com/photo.php?fbid=739472276455401&set=a.107809909621644&type=3&theater
-        
-        //String nombreResponsable = responsableDao.findResponsable(this.idResponsable).toString();
-            
-        
         String element = "";
         String bienes = "";
         int max = this.modeloImprimir.getSize();
@@ -224,8 +210,14 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         
         
         this.parametros.put("ruta", System.getenv().get("RUTAREPORTES"));
+        
+        /* Busco responsable */
+        this.parametros.put("NOMBRERESPONSABLE", this.responsable.getApeyNom());
+        
+        
+        
         String vpath = System.getenv().get("RUTAREPORTES")+"/"+this.reportName+".jasper";
-        //String vpath = "/home/diego/proyectos/patrimonio/src/Reportes/"+this.reportName+".jasper";
+
         this.inicializarParametros(idReporte,"");
         AbsJasperReports.createReport(conn, vpath,parametros);
         AbsJasperReports.showViewer();
