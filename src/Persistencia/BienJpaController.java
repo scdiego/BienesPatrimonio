@@ -521,6 +521,44 @@ public class BienJpaController implements Serializable {
         }
     }
     
+    public int utltimoNroInventario(){
+        Bien unBien;
+        unBien = this.ultimoBien();
+        return unBien.getNroInventario();
+    }
+    
+    public int siguienteNroInventaio(int nro){
+        EntityManager em = null;
+        em = getEntityManager();
+        em.getTransaction().begin();
+        StoredProcedureQuery sp = em.createStoredProcedureQuery("SIGUIENTE");
+        sp.registerStoredProcedureParameter("NRO", Integer.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("SALIDA", Integer.class, ParameterMode.OUT);
+        
+        sp.setParameter("NRO", nro);
+        
+        sp.execute();
+        int salida = Integer.parseInt(sp.getOutputParameterValue("SALIDA").toString());
+        // final  int idReporte = Integer.parseInt(sp.getOutputParameterValue("id").toString());
+        em.getTransaction().commit();
+        return salida;
+    }
+    public int anteriorNroInventario(int nro){
+        EntityManager em = null;
+        em = getEntityManager();
+        em.getTransaction().begin();
+        StoredProcedureQuery sp = em.createStoredProcedureQuery("ANTERIOR");
+        sp.registerStoredProcedureParameter("NRO", Integer.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("SALIDA", Integer.class, ParameterMode.OUT);
+        
+        sp.setParameter("NRO", nro);
+        
+        sp.execute();
+        int salida = Integer.parseInt(sp.getOutputParameterValue("SALIDA").toString());
+        // final  int idReporte = Integer.parseInt(sp.getOutputParameterValue("id").toString());
+        em.getTransaction().commit();
+        return salida;
+    }
     public Bien siguienteBien(int nro){
        EntityManager em = getEntityManager();
        em.getEntityManagerFactory().getCache().evictAll();
@@ -538,6 +576,21 @@ public class BienJpaController implements Serializable {
        Query query = em.createQuery(q)
               .setParameter("inv", nro - 1);
        return (Bien) query.getSingleResult();
+    }
+    
+    public boolean existeBien(int nro){
+       EntityManager em = getEntityManager();
+       em.getEntityManagerFactory().getCache().evictAll();
+       boolean salida = false;
+       String q = "SELECT count(b) FROM Bien b WHERE b.nroInventario =: inv";
+       Query query = em.createQuery(q)
+              .setParameter("inv", nro );
+       
+       int i = (int) query.getSingleResult();
+       if(i >= 0){
+           salida = true;
+       }
+       return salida;
     }
     
 }

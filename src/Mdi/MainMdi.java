@@ -84,13 +84,7 @@ public class MainMdi extends javax.swing.JFrame {
         objFrmImportCvs.setUser(this.user);
         objFrmImportCvs.setSize(800,550);
         jifFrmImportCvs.setSize(800,550);
-        
-        jifFrmImpresionEtiquetas.setContentPane(objFrmImportCvs);
-        objFrmImpresionEtiquetas.setParent(this); 
-        objFrmImpresionEtiquetas.setUser(this.user);
-        objFrmImpresionEtiquetas.setSize(800,550);
-        jifFrmImpresionEtiquetas.setSize(800,550);
-        
+                
         // Reportes //
         jifRepoBienes.setContentPane(objRepoBienes);
        // objRepoBienes.setParent(this);   
@@ -457,7 +451,7 @@ public class MainMdi extends javax.swing.JFrame {
         desktopPane.add(jifFrmImportCvs);
         jifFrmImportCvs.setBounds(290, 220, 50, 32);
 
-        jifFrmImpresionEtiquetas.setVisible(true);
+        jifFrmImpresionEtiquetas.setVisible(false);
 
         javax.swing.GroupLayout jifFrmImpresionEtiquetasLayout = new javax.swing.GroupLayout(jifFrmImpresionEtiquetas.getContentPane());
         jifFrmImpresionEtiquetas.getContentPane().setLayout(jifFrmImpresionEtiquetasLayout);
