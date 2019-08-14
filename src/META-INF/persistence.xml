@@ -10,7 +10,7 @@
     <class>Negocio.Asignacion</class>
     <class>Negocio.Auditoria</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://192.168.15.3:3306/patrimonio"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://192.168.0.106.3:3306/patrimonio"/>
       <property name="javax.persistence.jdbc.user" value="patrimonio"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value="V4lh4ll$"/>
