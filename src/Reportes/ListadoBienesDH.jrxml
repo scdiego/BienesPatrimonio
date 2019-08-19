@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ListadoBienes" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="50" rightMargin="10" topMargin="20" bottomMargin="20" uuid="41eaaf7b-d5db-4939-9c14-1cc10994f681">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="126"/>
-	<property name="ireport.y" value="0"/>
-	<parameter name="desde" class="java.lang.Integer"/>
-	<parameter name="hasta" class="java.lang.Integer"/>
+	<property name="ireport.x" value="68"/>
+	<property name="ireport.y" value="92"/>
+	<parameter name="desde" class="java.lang.String"/>
+	<parameter name="hasta" class="java.lang.String"/>
 	<parameter name="condicion" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -130,6 +130,14 @@ ORDER BY NROINVENTARIO]]>
 				</textElement>
 				<text><![CDATA[CANTIDAD]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="0" y="3" width="100" height="17" uuid="1eeef72e-4c6d-4730-bb01-271dd8222920"/>
+				<textFieldExpression><![CDATA[$P{desde}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="3" width="100" height="17" uuid="bdf2d3d9-3968-4cb3-aa78-5523a5d8e025"/>
+				<textFieldExpression><![CDATA[$P{hasta}]]></textFieldExpression>
+			</textField>
 		</band>
 	</summary>
 </jasperReport>

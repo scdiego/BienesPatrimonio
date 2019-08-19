@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ListadoBienes" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="50" rightMargin="10" topMargin="20" bottomMargin="20" uuid="41eaaf7b-d5db-4939-9c14-1cc10994f681">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="24"/>
+	<property name="ireport.y" value="115"/>
 	<parameter name="responsable" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -10,9 +10,9 @@
 	<queryString>
 		<![CDATA[SELECT LPAD( NROINVENTARIO, 6, '0' ) as NROINVENTARIO,DESCRIPCION,VALOR, RESPONSABLE.NOMBRE, RESPONSABLE.DNI, SECTOR.NOMBRE AS SECTOR
 FROM BIEN INNER JOIN ASIGNACION on BIEN.id = ASIGNACION.BIEN_ID
-INNER JOIN RESPONSABLE on  ASIGNACION.BIEN_ID = RESPONSABLE.ID
+INNER JOIN RESPONSABLE on  ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID
 INNER JOIN SECTOR on RESPONSABLE.SECTOR_ID = SECTOR.ID
-WHERE ASIGNACION.RESPONSABLE_ID = $P{responsable}
+WHERE RESPONSABLE.ID = $P{responsable}
 ORDER BY NROINVENTARIO]]>
 	</queryString>
 	<field name="NROINVENTARIO" class="java.lang.String">

@@ -88,7 +88,7 @@ ORDER BY NROINVENTARIO]]>
 			</textField>
 			<image>
 				<reportElement x="0" y="2" width="535" height="48" uuid="1889e09f-e3db-4ed2-8bb1-fdc1dd6ac47c"/>
-				<imageExpression><![CDATA["/home/jose/Escritorio/Reportes/header.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{ruta}+"header.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>

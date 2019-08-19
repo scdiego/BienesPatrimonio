@@ -34,7 +34,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel1" max="32767" attributes="0"/>
-                  <Component id="jScrollPane1" pref="459" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="572" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -71,13 +71,11 @@
                                   <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="nHasta" alignment="0" pref="73" max="32767" attributes="0"/>
-                                          <Component id="Ndesde" alignment="0" max="32767" attributes="0"/>
-                                      </Group>
-                                      <Component id="fDede" min="-2" pref="66" max="-2" attributes="0"/>
-                                      <Component id="fHasta" min="-2" pref="64" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="nHasta" alignment="0" pref="114" max="32767" attributes="0"/>
+                                      <Component id="Ndesde" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="fDesde" alignment="0" pref="114" max="32767" attributes="0"/>
+                                      <Component id="fHasta" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
@@ -112,11 +110,6 @@
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-              </Group>
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="chBaja" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -156,16 +149,14 @@
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="fDede" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="fDesde" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="fHasta" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="chBaja" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="43" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -306,27 +297,9 @@
             <Property name="text" type="java.lang.String" value="Hasta"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="chBaja">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Solo Baja"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chBajaActionPerformed"/>
-          </Events>
+        <Component class="javax.swing.JTextField" name="fDesde">
         </Component>
-        <Component class="javax.swing.JFormattedTextField" name="fDede">
-          <Properties>
-            <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
-              <Format subtype="0" type="1"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JFormattedTextField" name="fHasta">
-          <Properties>
-            <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
-              <Format subtype="0" type="1"/>
-            </Property>
-          </Properties>
+        <Component class="javax.swing.JTextField" name="fHasta">
         </Component>
       </SubComponents>
     </Container>

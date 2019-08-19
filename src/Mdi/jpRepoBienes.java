@@ -24,6 +24,9 @@ import dbConn.Conexion;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,9 +58,10 @@ public class jpRepoBienes extends javax.swing.JPanel {
     private String reportName = "ListadoBienesNro";
     private String parametro = "";
     private Map<String,Object> parametros = new HashMap();
-    SectorJpaController sectorDao;
+    SectorJpaController sectorDao = new SectorJpaController();
     AsignacionJpaController asignacionDao = new AsignacionJpaController();
     ResponsableJpaController responsableDao = new ResponsableJpaController();
+    
     public boolean baja = false;
     
     
@@ -221,9 +225,9 @@ public class jpRepoBienes extends javax.swing.JPanel {
         
         int i;
         if (lista.length > 0){
-                    for(i=0 ; i < lista.length; i++ ){
-            tblBienes.addRow(lista[i]);
-        }
+            for(i=0 ; i < lista.length; i++ ){
+                tblBienes.addRow(lista[i]);
+            }
         }else{
            showNoResults("");
         }
@@ -238,7 +242,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
        if(baja){
            strBaja = " AND BIEN.DEBAJA = true ";
        }
-       String sql = "SELECT BIEN.NROINVENTARIO,BIEN.DESCRIPCION,BIEN.ESTADO,RESPONSABLE.NOMBRE as RESPONSABLE,SECTOR.NOMBRE,DATE_FORMAT(BIEN.FECHAALTA,'%d/%m/%Y') as FECHAALTA FROM ASIGNACION INNER JOIN BIEN ON ASIGNACION.BIEN_ID = BIEN.ID LEFT JOIN RESPONSABLE ON ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID LEFT JOIN SECTOR ON RESPONSABLE.SECTOR_ID = SECTOR.ID WHERE SECTOR.NOMBRE = '" + sectorStr + "' AND ASIGNACION.fechaHasta is null "+ strBaja;
+       String sql = "SELECT BIEN.NROINVENTARIO,BIEN.DESCRIPCION,BIEN.ESTADO,RESPONSABLE.NOMBRE as RESPONSABLE,SECTOR.NOMBRE,DATE_FORMAT(BIEN.FECHAALTA,'%d/%m/%Y') as FECHAALTA FROM ASIGNACION INNER JOIN BIEN ON ASIGNACION.BIEN_ID = BIEN.ID LEFT JOIN RESPONSABLE ON ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID LEFT JOIN SECTOR ON RESPONSABLE.SECTOR_ID = SECTOR.ID WHERE SECTOR.NOMBRE = '" + sectorStr + "' AND ASIGNACION.fechaHasta is null "+ strBaja + " order by NROINVENTARIO";
        List<String> campos = new ArrayList();
        campos.add("NROINVENTARIO");
        campos.add("DESCRIPCION");
@@ -256,7 +260,8 @@ public class jpRepoBienes extends javax.swing.JPanel {
         if(baja){
            strBaja = " AND BIEN.DEBAJA = true ";
         }
-        String sql = "SELECT BIEN.NROINVENTARIO,BIEN.DESCRIPCION,BIEN.ESTADO,RESPONSABLE.NOMBRE as RESPONSABLE,SECTOR.NOMBRE,DATE_FORMAT(BIEN.FECHAALTA,'%d/%m/%Y') as FECHAALTA FROM ASIGNACION INNER JOIN BIEN ON ASIGNACION.BIEN_ID = BIEN.ID LEFT JOIN RESPONSABLE ON ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID LEFT JOIN SECTOR ON RESPONSABLE.SECTOR_ID = SECTOR.ID WHERE RESPONSABLE.NOMBRE = '" + responsableStr + "' AND ASIGNACION.fechaHasta is null"+ strBaja;
+        String sql = "SELECT LPAD( BIEN.NROINVENTARIO, 6, '0' ) as NROINVENTARIO,BIEN.DESCRIPCION,BIEN.ESTADO,RESPONSABLE.NOMBRE as RESPONSABLE,SECTOR.NOMBRE,DATE_FORMAT(BIEN.FECHAALTA,'%d/%m/%Y') as FECHAALTA FROM ASIGNACION INNER JOIN BIEN ON ASIGNACION.BIEN_ID = BIEN.ID LEFT JOIN RESPONSABLE ON ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID LEFT JOIN SECTOR ON RESPONSABLE.SECTOR_ID = SECTOR.ID WHERE RESPONSABLE.NOMBRE = '" + responsableStr + "' AND ASIGNACION.fechaHasta is null"+ strBaja + " order by NROINVENTARIO";
+        this.parametros.put("sql", sql);
         List<String> campos = new ArrayList();
         campos.add("NROINVENTARIO");
         campos.add("DESCRIPCION");
@@ -265,19 +270,9 @@ public class jpRepoBienes extends javax.swing.JPanel {
         campos.add("NOMBRE");
         campos.add("FECHAALTA");
         Object[][] lista = consulta.ejcutarConsulta(sql, campos);
-        Responsable responsable = (Responsable) cmbResponsable.getSelectedItem();
-        this.parametros.put("RESPONSABLE", responsable.getApeyNom());
         mostrarConsulta(lista);
     }    
-    private void findByResponsable() {
-        Responsable responsable = (Responsable) cmbResponsable.getSelectedItem();
-        List<Bien> bienes = asignacionDao.findAsignacionesByResponsable(responsable);
-        if (bienes.isEmpty()) {
-            showNoResults("Responsable");
-        } else {
-            mostrarBienes(bienes);
-        }        
-    }        
+       
     public final void findByRango(boolean baja){
         //findBienByNroDesde
         int desde = 0; 
@@ -293,11 +288,11 @@ public class jpRepoBienes extends javax.swing.JPanel {
           condicion = " BIEN.NROINVENTARIO >= ";
           condicion = condicion.concat(String.valueOf(desde));
         }else{
-         condicion = " BIEN.NROINVENTARIO BETWEEN (" + desde + " and " + hasta +" ) ";
+         condicion = " BIEN.NROINVENTARIO BETWEEN " + desde + " and " + hasta  ;
          
         }
-      ConsultasDB consulta = new ConsultasDB();
-       String sectorStr = cmbSector.getSelectedItem().toString();
+       ConsultasDB consulta = new ConsultasDB();
+      // String sectorStr = cmbSector.getSelectedItem().toString();
        String strBaja = "";
        if(baja){
            strBaja = " AND BIEN.DEBAJA = true ";
@@ -322,8 +317,8 @@ public class jpRepoBienes extends javax.swing.JPanel {
         FechaHora fecha = new FechaHora();
         List<Bien> bienes = new ArrayList();
         
-        if(!"".equals(this.fDede.getText())){
-            desde = fecha.StringToDate(this.fDede.getText());
+        if(!"".equals(this.fDesde.getText())){
+            desde = fecha.StringToDate(this.fDesde.getText());
         }
         
         if(!"".equals(this.fHasta.getText())) {
@@ -331,7 +326,23 @@ public class jpRepoBienes extends javax.swing.JPanel {
         }
         
         if(!"".equals(this.fHasta.getText())) {
-            bienes = dao.findBienesByFecha(desde, hasta);
+          //  bienes = dao.findBienesByFecha(desde, hasta);
+       String strBaja = "";
+        ConsultasDB consulta = new ConsultasDB();
+        if(baja){
+           strBaja = " AND BIEN.DEBAJA = true ";
+        }
+            String sql = "SELECT LPAD( BIEN.NROINVENTARIO, 6, '0' ) as NROINVENTARIO,BIEN.DESCRIPCION,BIEN.ESTADO,RESPONSABLE.NOMBRE as RESPONSABLE,SECTOR.NOMBRE,DATE_FORMAT(BIEN.FECHAALTA,'%d/%m/%Y') as FECHAALTA FROM ASIGNACION INNER JOIN BIEN ON ASIGNACION.BIEN_ID = BIEN.ID LEFT JOIN RESPONSABLE ON ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID LEFT JOIN SECTOR ON RESPONSABLE.SECTOR_ID = SECTOR.ID WHERE BIEN.FECHAALTA  between '" + desde + "' and '"+ hasta + "' AND ASIGNACION.fechaHasta is null"+ strBaja + " order by NROINVENTARIO";
+            List<String> campos = new ArrayList();
+            campos.add("NROINVENTARIO");
+            campos.add("DESCRIPCION");
+            campos.add("ESTADO");
+            campos.add("RESPONSABLE");
+            campos.add("NOMBRE");
+            campos.add("FECHAALTA");
+            Object[][] lista = consulta.ejcutarConsulta(sql, campos);
+            mostrarConsulta(lista);
+
         }else{
             if(baja) {
                 bienes = dao.findBienesByFechaBaja(desde);
@@ -340,13 +351,6 @@ public class jpRepoBienes extends javax.swing.JPanel {
             }
             
         }
-        
-        if (bienes.isEmpty()) {
-            showNoResults("Fechas");
-        } else {
-            mostrarBienes(bienes);
-        }  
-        
     }    
     public boolean isSearchFieldEmpty() {
         String searchStr = this.txtBusqueda.getText().trim();
@@ -389,43 +393,47 @@ public class jpRepoBienes extends javax.swing.JPanel {
     private void inicializarParametros(){
         String desde;
         String hasta;
+        FechaHora conv = new FechaHora();
         this.parametros.put("ruta", System.getenv().get("RUTAREPORTES"));
         switch (this.reportName){           
             case  "ListadoBienesNro":
-                this.parametros.put("Nro", this.txtBusqueda.getText());
+                this.parametros.put("nro", this.txtBusqueda.getText());
                 break;
             case "ListadoBienesDescripcion":
                 this.parametros.put("descripcion", this.txtBusqueda.getText());
                 break;
             case "ListadoBienesxSector":
                 String sector = this.cmbSector.getSelectedItem().toString();
-                this.parametros.put("sector", sector);
+                this.parametros.put("sector", sectorDao.findSectorByNombre(sector).getId());
                 break; 
-            case "ListadoBienesxResponsable":
-                String responsable = this.cmbResponsable.getSelectedItem().toString();
-                
-                this.parametros.put("responsable", responsable);
+            case "ListadoBienesResponsable":
+                String responsableStr = cmbResponsable.getSelectedItem().toString();
+                //Responsable responsable = responsableDao.findResponsableByNombre(responsableStr);
+                int idResponsable = responsableDao.findResponsableByNombre(responsableStr).getId();
+                this.parametros.put("responsable", idResponsable);
                 break;
             case "ListadoBienesNroD":
                 desde = this.Ndesde.getText();
                 this.parametros.put("desde", desde);
                 break;
-            case "ListadoBienesNroDH":
-                desde = this.nHasta.getText();
+            case "ListadoBienesDH":
+                desde = this.Ndesde.getText();
                 hasta = this.nHasta.getText();
                 this.parametros.put("desde", desde);
                 this.parametros.put("hasta",hasta);
                 break;
             case "ListadoBienesFechaD":
-                desde = this.fDede.getText();
-                this.parametros.put("desde", desde);
+                desde = this.fDesde.getText();
+                
+                this.parametros.put("desde", conv.StringToDate(desde));
                 
                 break;
             case "ListadoBienesFechaDH":
-                desde = this.fDede.getText();
+                desde = this.fDesde.getText();
                 hasta = this.fHasta.getText();
-                this.parametros.put("desde", desde);
-                this.parametros.put("hasta",hasta);
+                
+                this.parametros.put("desde", conv.StringToDate(desde));
+                this.parametros.put("hasta",conv.StringToDate(hasta));
                 break;
         }
     }
@@ -458,9 +466,8 @@ public class jpRepoBienes extends javax.swing.JPanel {
         rdFecha = new javax.swing.JRadioButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        chBaja = new javax.swing.JCheckBox();
-        fDede = new javax.swing.JFormattedTextField();
-        fHasta = new javax.swing.JFormattedTextField();
+        fDesde = new javax.swing.JTextField();
+        fHasta = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         gridBienes = new javax.swing.JTable();
 
@@ -541,17 +548,6 @@ public class jpRepoBienes extends javax.swing.JPanel {
 
         jLabel4.setText("Hasta");
 
-        chBaja.setText("Solo Baja");
-        chBaja.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chBajaActionPerformed(evt);
-            }
-        });
-
-        fDede.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter()));
-
-        fHasta.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter()));
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -572,12 +568,11 @@ public class jpRepoBienes extends javax.swing.JPanel {
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jButton1))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(nHasta, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
-                                        .addComponent(Ndesde, javax.swing.GroupLayout.Alignment.LEADING))
-                                    .addComponent(fDede, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(fHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(nHasta, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                                    .addComponent(Ndesde)
+                                    .addComponent(fDesde, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                                    .addComponent(fHasta))
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -600,10 +595,6 @@ public class jpRepoBienes extends javax.swing.JPanel {
                                     .addComponent(rdFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chBaja)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -636,14 +627,12 @@ public class jpRepoBienes extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(fDede, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(fDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(fHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(chBaja)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)))
@@ -686,51 +675,32 @@ public class jpRepoBienes extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         String hasta = this.nHasta.getText().trim();
-       if(filter == RANGO){
-                if("".equals(hasta)){
-                    reportName = "ListadoBienesD";
-                    this.nHasta.setEnabled(false);
-                }else{
-                    reportName = "ListadoBienesDH";
-                }
-
-                if("".equals(hasta)){
-                    reportName = "ListadoBienesD";
-                    this.nHasta.setEnabled(false);
-                }else{
-                    reportName = "ListadoBienesDH";
-                }
+        if(filter == RANGO){
+            if("".equals(hasta)){
+                reportName = "ListadoBienesD";
+                this.nHasta.setEnabled(false);
+            }else{
+                reportName = "ListadoBienesDH";
+            }
        }else{
            if(filter == FECHA){
                
-           
+               hasta = this.fHasta.getText().trim();
                 if("".equals(hasta)){
                     reportName = "ListadoBienesFechaD";
                     this.nHasta.setEnabled(false);
                 }else{
                     reportName = "ListadoBienesFechaDH";
                 }   
-
-                if("".equals(hasta)){
-                    reportName = "ListadoBienesFechaD";
-                    this.nHasta.setEnabled(false);
-                }else{
-                    reportName = "ListadoBienesFechaDH";
-
-               }
        }
         } 
-
-        
-
-        
         buscar();
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -740,13 +710,10 @@ public class jpRepoBienes extends javax.swing.JPanel {
             this.reportName = this.reportName.concat("Baja");
         }
         String vpath = System.getenv().get("RUTAREPORTES")+"/"+this.reportName+".jasper";        
-        //this.setearParametros();
         this.inicializarParametros();
         AbsJasperReports.createReport(conn, vpath,parametros);
         AbsJasperReports.showViewer();
-        
-       //JOptionPane.showMessageDialog(null, this.listaBienesImprimir);
-       //this.setAlwaysOnTop(false);
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void rdNroInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdNroInventarioActionPerformed
@@ -779,7 +746,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
     private void rdResponsableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdResponsableActionPerformed
         // TODO add your handling code here:
                 filter = RESPONSABLE;
-        reportName = "ListadoBienesxResponsable";
+        reportName = "ListadoBienesResponsable";
         txtBusqueda.setEnabled(false);
         cmbSector.setEnabled(false);
         cmbResponsable.setEnabled(true);
@@ -799,7 +766,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
         this.Ndesde.setEnabled(false);
         this.nHasta.setEnabled(false);
         
-        this.fDede.setEnabled(true);
+        this.fDesde.setEnabled(true);
         this.fHasta.setEnabled(true);
     }//GEN-LAST:event_rdFechaActionPerformed
 
@@ -812,25 +779,19 @@ public class jpRepoBienes extends javax.swing.JPanel {
         txtBusqueda.setEnabled(false);
         cmbResponsable.setEnabled(false);
         cmbSector.setEnabled(false);
-        this.fDede.setEnabled(false);
+        this.fDesde.setEnabled(false);
         this.fHasta.setEnabled(false);
         this.nHasta.setEnabled(true);
         this.nHasta.setEnabled(true);
     }//GEN-LAST:event_rdRangoInentarioActionPerformed
 
-    private void chBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chBajaActionPerformed
-        // TODO add your handling code here:
-        this.baja = !this.baja;
-    }//GEN-LAST:event_chBajaActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Ndesde;
-    private javax.swing.JCheckBox chBaja;
     private javax.swing.JComboBox<String> cmbResponsable;
     private javax.swing.JComboBox<String> cmbSector;
-    private javax.swing.JFormattedTextField fDede;
-    private javax.swing.JFormattedTextField fHasta;
+    private javax.swing.JTextField fDesde;
+    private javax.swing.JTextField fHasta;
     private javax.swing.ButtonGroup grOpciones;
     private javax.swing.JTable gridBienes;
     private javax.swing.JButton jButton1;
