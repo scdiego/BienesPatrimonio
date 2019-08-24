@@ -251,6 +251,14 @@ public class Bien implements Serializable {
         //str1.toLowerCase().contains(str2.toLowerCase())
       return  this.getDescripcion().toLowerCase().contains(unString);
     }
+    public String getNroInv(){
+        String i = this.getNroInventario().toString();
+        while (i.length() < 6){
+            i = "0" + i;
+        }
+        
+    return i;
+    }
     
     @Override
     public String toString() {
@@ -261,7 +269,7 @@ public class Bien implements Serializable {
             descrip = this.getDescripcion();
         }
         
-        return this.getNroInventario().toString().concat(" --- ").concat(descrip);
+        return this.getNroInv().concat(" --- ").concat(descrip);
     }
     
     public Sector sectorAsignado(){

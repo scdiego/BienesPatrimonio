@@ -196,7 +196,8 @@ public class AsignacionJpaController implements Serializable {
         String q = "SELECT a.bien"
                 + " FROM Asignacion a"
                 + " WHERE a.responsable = :responsable"
-                + " AND a.fechaHasta IS NULL";
+                + " AND a.fechaHasta IS NULL "
+                + " ORDER BY a.bien.nroInventario";
         Query query = em.createQuery(q)
                 .setParameter("responsable", responsable);
         List<Bien> list = query.getResultList();

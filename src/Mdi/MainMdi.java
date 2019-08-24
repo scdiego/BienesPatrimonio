@@ -97,7 +97,7 @@ public class MainMdi extends javax.swing.JFrame {
         jifRepoLibroBienes.setSize(1100,350);
         
         jifRepoCargos.setContentPane(objRepoCargos);
-        //objRepoCargos.setParent(this);   
+        objRepoCargos.setparent(this);   
         objRepoCargos.setSize(550,450);
         jifRepoCargos.setSize(550,450);
         
@@ -167,6 +167,9 @@ public class MainMdi extends javax.swing.JFrame {
     }  
     public void ocultarFrmImportCvs(){
         this.jifFrmImportCvs.setVisible(false);
+    }
+    public void ocultarImpresionCargos(){
+        this.jifRepoCargos.setVisible(false);
     }
     
     public void mostrarBajaBien(Bien unBien){

@@ -68,6 +68,14 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         this.inicializar();
         
     }
+
+    public void setUser(Usuario user) {
+        this.user = user;
+    }
+
+    public void setparent(MainMdi parent) {
+        this.parent = parent;
+    }
     
     
     public void cargarResponsables(){
@@ -126,11 +134,16 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
     }
     
     public void agregar(){
+        try{
         String nombre =  this.modelo.getElementAt(this.lstBienes.getSelectedIndex()).toString();
         String[] parts = nombre.split("---") ;
         unBien = this.controllerBien.findBienNroInventario(Integer.parseInt(parts[0].trim()));        
         this.modeloImprimir.addElement(unBien);
     //    this.modelo.remove(this.lstBienes.getSelectedIndex());
+        }
+        catch(ArrayIndexOutOfBoundsException e){
+            JOptionPane.showMessageDialog(this,"Debe seleccionar un bien al menos","Algo salió mal",JOptionPane.INFORMATION_MESSAGE);
+        }
     }
     
     public void agregar(int posicion){
@@ -323,6 +336,11 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         );
 
         btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAceptarActionPerformed(evt);
+            }
+        });
 
         jButton1.setText(">");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -463,6 +481,11 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
             this.showNoResults();
         }
     }//GEN-LAST:event_btnImprimirActionPerformed
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        // TODO add your handling code here:
+        this.parent.ocultarImpresionCargos();
+    }//GEN-LAST:event_btnAceptarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

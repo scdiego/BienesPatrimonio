@@ -65,7 +65,7 @@ public class Responsable implements Serializable{
     }
     
     public String getApeyNom(){
-        return this.nombre.concat(" ").concat(this.dni);
+        return this.nombre.concat(" DNI:").concat(this.dni);
     }
 
     public void setNombre(String nombre) {
