@@ -21,8 +21,19 @@ public class Asignacion implements Serializable {
     
     private Responsable subResponsable;
 
+    /*
+     * Constructor vacio de la clase Asignacion
+     */
+    
     public Asignacion() {
     }
+    
+    /*
+     * Constructor de la clase Asignacion   
+     * @param responsabable El responsable que tendra a su cargo el bien
+     * @param responsabable El responsable que tendra a su cargo el bien   .
+     */
+
 
     public Asignacion(Responsable responsable, Bien bien, Date fechaDesde, Responsable subResponsable) {
         this.responsable = responsable;
