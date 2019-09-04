@@ -144,9 +144,13 @@ public class AsignacionJpaController implements Serializable {
              EntityManager em = getEntityManager();
       em.getEntityManagerFactory().getCache().evictAll();
         Query query = em.createQuery("SELECT a FROM Asignacion a WHERE a.bien.nroInventario =:nroInventario").setParameter("nroInventario", nroInventario);
-        
-            Asignacion asignacion = (Asignacion) query.getSingleResult();
+            try{
+                            Asignacion asignacion = (Asignacion) query.getSingleResult();
             return asignacion.getSubResponsable();
+
+            }catch (NonUniqueResultException e){
+                return null;
+            }
          
     }
     
@@ -154,9 +158,12 @@ public class AsignacionJpaController implements Serializable {
       EntityManager em = getEntityManager();
       em.getEntityManagerFactory().getCache().evictAll();
         Query query = em.createQuery("SELECT a FROM Asignacion a WHERE  a.fechaDesde is not null and a.fechaHasta is null and  a.bien.nroInventario =:nroInventario").setParameter("nroInventario", nroInventario);
-        
+            try{
             Asignacion asignacion = (Asignacion) query.getSingleResult();
             return asignacion.getResponsable();
+            }catch (NonUniqueResultException e){
+                return null;
+            }
         
     }
     
@@ -189,7 +196,8 @@ public class AsignacionJpaController implements Serializable {
         String q = "SELECT a.bien"
                 + " FROM Asignacion a"
                 + " WHERE a.responsable = :responsable"
-                + " AND a.fechaHasta IS NULL";
+                + " AND a.fechaHasta IS NULL "
+                + " ORDER BY a.bien.nroInventario";
         Query query = em.createQuery(q)
                 .setParameter("responsable", responsable);
         List<Bien> list = query.getResultList();

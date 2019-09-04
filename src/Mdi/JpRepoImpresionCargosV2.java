@@ -68,6 +68,14 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         this.inicializar();
         
     }
+
+    public void setUser(Usuario user) {
+        this.user = user;
+    }
+
+    public void setparent(MainMdi parent) {
+        this.parent = parent;
+    }
     
     
     public void cargarResponsables(){
@@ -126,11 +134,16 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
     }
     
     public void agregar(){
+        try{
         String nombre =  this.modelo.getElementAt(this.lstBienes.getSelectedIndex()).toString();
         String[] parts = nombre.split("---") ;
         unBien = this.controllerBien.findBienNroInventario(Integer.parseInt(parts[0].trim()));        
         this.modeloImprimir.addElement(unBien);
     //    this.modelo.remove(this.lstBienes.getSelectedIndex());
+        }
+        catch(ArrayIndexOutOfBoundsException e){
+            JOptionPane.showMessageDialog(this,"Debe seleccionar un bien al menos","Algo salió mal",JOptionPane.INFORMATION_MESSAGE);
+        }
     }
     
     public void agregar(int posicion){
@@ -189,24 +202,10 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         em = getEntityManager();
         em.getTransaction().begin();
         StoredProcedureQuery sp = em.createStoredProcedureQuery("agregarBienesReporte");
-//        StoredProcedureQuery sp2 = em.createStoredProcedureQuery("AGREGA_BIEN_REPORTE");
         
         sp.registerStoredProcedureParameter("bienes", String.class, ParameterMode.IN);
         sp.registerStoredProcedureParameter("id", Integer.class, ParameterMode.OUT);
 
-        //int idResponsable = this.responsable.getId();
-        //sp.setParameter("IDRESPONSABLE", idResponsable);
-        //sp.execute();
-        
-        //final  int idReporte = Integer.parseInt(sp.getOutputParameterValue("IDREPORTE").toString());
-        //em.getTransaction().commit();
-        
-        //https://www.facebook.com/LuliPedotti
-        //https://www.facebook.com/photo.php?fbid=739472276455401&set=a.107809909621644&type=3&theater
-        
-        //String nombreResponsable = responsableDao.findResponsable(this.idResponsable).toString();
-            
-        
         String element = "";
         String bienes = "";
         int max = this.modeloImprimir.getSize();
@@ -224,8 +223,14 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         
         
         this.parametros.put("ruta", System.getenv().get("RUTAREPORTES"));
+        
+        /* Busco responsable */
+        this.parametros.put("NOMBRERESPONSABLE", this.responsable.getApeyNom());
+        
+        
+        
         String vpath = System.getenv().get("RUTAREPORTES")+"/"+this.reportName+".jasper";
-        //String vpath = "/home/diego/proyectos/patrimonio/src/Reportes/"+this.reportName+".jasper";
+
         this.inicializarParametros(idReporte,"");
         AbsJasperReports.createReport(conn, vpath,parametros);
         AbsJasperReports.showViewer();
@@ -331,6 +336,11 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
         );
 
         btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAceptarActionPerformed(evt);
+            }
+        });
 
         jButton1.setText(">");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -471,6 +481,11 @@ public class JpRepoImpresionCargosV2 extends javax.swing.JPanel {
             this.showNoResults();
         }
     }//GEN-LAST:event_btnImprimirActionPerformed
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        // TODO add your handling code here:
+        this.parent.ocultarImpresionCargos();
+    }//GEN-LAST:event_btnAceptarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

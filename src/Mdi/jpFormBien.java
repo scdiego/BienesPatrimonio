@@ -91,24 +91,47 @@ public class jpFormBien extends javax.swing.JPanel {
         this.completarTextos();
         
     }
+
+    
     private void anterior(){
-        Integer nro = Integer.parseInt(txtNrodeInventario.getText()); 
-        nro = nro -1;
-        if(nro > 0){
-            this.txtNrodeInventario.setText(nro.toString());
-            this.buscar();
-        }
+        int nro =  Integer.parseInt(this.txtNrodeInventario.getText());
+        String salida = String.valueOf(dao.anteriorNroInventario(nro));
+        this.txtNrodeInventario.setText(salida);
+        this.buscar();
+        this.completarTextos();
     }
     private void siguiente(){
         Integer nro = Integer.parseInt(txtNrodeInventario.getText()); 
-        nro = nro +1;
-        
-            this.txtNrodeInventario.setText(nro.toString());
-            this.buscar();
+        int salida = dao.siguienteNroInventaio(nro);
+        this.txtNrodeInventario.setText(String.valueOf(salida));
+        this.buscar();
+        this.completarTextos();
         
     }
     private void ultimo(){
         this.cargarUltimo();        
+    }
+    
+    private void habilitarNavegacionBotones(int nro){
+        int max = dao.utltimoNroInventario();
+        
+        jButton3.setEnabled(true);
+        jButton4.setEnabled(true);
+        jButton5.setEnabled(true);
+        jButton6.setEnabled(true);
+        
+        if(nro == max){
+            //deshabilito siguientes
+            jButton5.setEnabled(false);
+            jButton6.setEnabled(false);
+
+        }
+        
+        if(nro == 1){
+            //deshabilito anteriores
+            jButton3.setEnabled(false);
+            jButton4.setEnabled(false);
+        }
     }
     
     public void cargarUltimo(){
@@ -116,6 +139,10 @@ public class jpFormBien extends javax.swing.JPanel {
             this.unBien = this.dao.ultimoBien();
             this.btbModificar.setEnabled(!this.unBien.isDebaja());
             this.btnEliminar.setEnabled(!this.unBien.isDebaja());
+            /* 
+                deshabilito mover para adelante
+            */
+            
             this.completarTextos();
         }
         catch (NullPointerException e){
@@ -136,7 +163,7 @@ public class jpFormBien extends javax.swing.JPanel {
         this.btnNuevo.setEnabled(this.user.habilitarNuevo());
         
     }
-    
+ /**   
     public void buscar(){
         // TODO add your handling code here:
         String nro = this.txtNrodeInventario.getText();
@@ -150,12 +177,32 @@ public class jpFormBien extends javax.swing.JPanel {
                     this.btnEliminar.setEnabled(!this.unBien.isDebaja());            
             //this.b
                 }else{
-                    JOptionPane.showMessageDialog(null, "No se encontro ningun bien con el nro ingresado.");
+                    //JOptionPane.showMessageDialog(null, "No se encontro ningun bien con el nro ingresado.");
                 }
             this.completarTextos(); 
             }
         
        
+    }
+  */  
+    public boolean buscar(){
+        // TODO add your handling code here:
+        String nro = this.txtNrodeInventario.getText();
+        boolean salida = false;
+        //if(!"".equals(nro)){
+            if(this.isInteger(nro) && !"".equals(nro) ){
+                List<Bien> lista = this.dao.findBienByNroInventario(Integer.parseInt(this.txtNrodeInventario.getText()));
+                this.limpiarComponentes();
+                if(lista.size() > 0){
+                    this.unBien = lista.get(0);
+                    this.btbModificar.setEnabled(!this.unBien.isDebaja());
+                    this.btnEliminar.setEnabled(!this.unBien.isDebaja());   
+                    salida = true;
+            //this.b
+                }
+            
+            }
+            return salida;
     }
     
     public boolean isInteger( String input )
@@ -355,6 +402,7 @@ public class jpFormBien extends javax.swing.JPanel {
             this.txtFechaBaja.setText(fecha.DateToString(this.unBien.getFechaBaja()));
         }
          this.competarTextosCargos();
+         this.habilitarNavegacionBotones(this.unBien.getNroInventario());
     }
     
     public void competarTextosCargos(){
