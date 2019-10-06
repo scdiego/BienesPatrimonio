@@ -15,6 +15,7 @@ import Persistencia.exceptions.NonexistentEntityException;
 import Presentacion.CtrlVista;
 import Presentacion.FrmCargo;
 import Utilidades.FechaHora;
+import Utilidades.ImprimirEtiqueta;
 import Utilidades.formatoBigDecimal;
 import com.sun.glass.events.KeyEvent;
 import java.math.BigDecimal;
@@ -759,6 +760,11 @@ public class jpFormBien extends javax.swing.JPanel {
 
         jButton1.setText("Imprimir Etiqueta");
         jButton1.setEnabled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -1026,6 +1032,12 @@ public class jpFormBien extends javax.swing.JPanel {
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         this.accionCancelarBoton(false);
     }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        ImprimirEtiqueta impresora = new ImprimirEtiqueta();
+        impresora.imprimir(this.unBien.getNroInv().toString());
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

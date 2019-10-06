@@ -12,8 +12,11 @@ import Negocio.Usuario;
 import Persistencia.BienJpaController;
 import Presentacion.CtrlVista;
 import Utilidades.FechaHora;
+import Utilidades.ImprimirEtiqueta;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -33,12 +36,16 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
     private Usuario user;
     public DefaultTableModel tblBienes;
     public ArrayList<Bien> listadeBienes = new ArrayList();
+    public  HashMap listaBienes;
+    public int indice;
 
      
     public FrmImpresionEtiquetas() {
         initComponents();
         tblBienes = new DefaultTableModel();
         this.colocarEncabezadoGrid();
+        this.listaBienes = new HashMap();
+        this.indice = 1;
     }
     
     public final void colocarEncabezadoGrid(){
@@ -53,8 +60,9 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
     } 
     
     public final void cargarGrid(){
+        
         Inventario inv = new Inventario();
-        int cantBienes = this.listadeBienes.size();
+        int cantBienes = this.listaBienes.size();
         int COLS = 6;
         Object[][] data = new Object[cantBienes][COLS];
         int rowIndex = 0;
@@ -62,17 +70,17 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
         
         //this.limpiarGrid();
         //this.colocarEncabezadoGrid();
-        for (Bien bien : this.listadeBienes) {
-            Integer nroInventario = bien.getNroInventario();
+        //for (Bien bien : this.listadeBienes) {
+            Integer nroInventario = this.unBien.getNroInventario();
             data[rowIndex][0] = nroInventario;
-            data[rowIndex][1] = bien.getDescripcion();
-            data[rowIndex][2] = bien.getEstado();    
-            data[rowIndex][5] = fecha.DateToString(bien.getFechaAlta());
-            Responsable responsableBien = inv.responsableBienID(bien.getId());
+            data[rowIndex][1] = this.unBien.getDescripcion();
+            data[rowIndex][2] = this.unBien.getEstado();    
+            data[rowIndex][5] = fecha.DateToString(this.unBien.getFechaAlta());
+            Responsable responsableBien = inv.responsableBienID(this.unBien.getId());
             //Responsable responsableBien = null;
             addResponsableDataToRow(data, rowIndex, responsableBien);           
             tblBienes.addRow(data[rowIndex]);
-        }
+       // }
     }
     
     private void addResponsableDataToRow(Object[][] data, int rowIndex, Responsable responsableBien) {
@@ -94,15 +102,17 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
         this.user = user;
     }
     
-    
-    
-    
     public void limpiarComponentes(){
         this.unBien = null;
     }
     
     public void agregarAlGrid(){
-        
+        this.listaBienes.put(this.indice, this.unBien.getNroInventario().toString());
+        this.listadeBienes.add(unBien);
+        this.txtNroInventario.setText(null);
+        int i = this.listaBienes.size();
+        this.indice = this.indice  + 1;
+        this.cargarGrid();
     }
     
     public boolean isInteger( String input ){
@@ -112,14 +122,14 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
         }catch( Exception e){
             return false;
         }
-}
+    }
     
     public void buscar(){
         // TODO add your handling code here:
         String nro = this.txtNroInventario.getText();
         //if(!"".equals(nro)){
             if(this.isInteger(nro) && !"".equals(nro) ){
-                List<Bien> lista = this.dao.findBienByNroInventario(Integer.parseInt(this.txtNroInventario.getText()));
+                List<Bien> lista = this.dao.findBienByNroInventario(Integer.parseInt(nro));
                 this.limpiarComponentes();
                 if(lista.size() > 0){
                     this.unBien = lista.get(0);
@@ -147,6 +157,7 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         gridBienes = new javax.swing.JTable();
         BtnImprimir = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         jLabel1.setText("N de Inventario");
 
@@ -177,6 +188,18 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
         jScrollPane1.setViewportView(gridBienes);
 
         BtnImprimir.setText("Imprimir");
+        BtnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnImprimirActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Aceptar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -194,7 +217,10 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
                         .addComponent(btnAgregar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(BtnImprimir)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -207,7 +233,9 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
                     .addComponent(btnAgregar)
                     .addComponent(BtnImprimir))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -237,11 +265,35 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_txtNroInventarioKeyPressed
 
+    
+    public final void limpiarGrid(){
+        if (this.tblBienes.getRowCount() > 0) {
+            for (int i = this.tblBienes.getRowCount() - 1; i > -1; i--) {
+               this.tblBienes.removeRow(i);
+            }
+        }
+    }
+    private void BtnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnImprimirActionPerformed
+        // TODO add your handling code here:
+        ImprimirEtiqueta impresora = new ImprimirEtiqueta();
+        impresora.setListaBienes(listaBienes);
+        impresora.imprimirLista();
+        this.listadeBienes.clear();
+        this.listaBienes.clear();
+        this.limpiarGrid();
+    }//GEN-LAST:event_BtnImprimirActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        this.miparent.ocultarImpresionEtiquetas();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnImprimir;
     private javax.swing.JButton btnAgregar;
     private javax.swing.JTable gridBienes;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txtNroInventario;
