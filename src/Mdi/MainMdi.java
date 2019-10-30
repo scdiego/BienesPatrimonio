@@ -34,7 +34,7 @@ public class MainMdi extends javax.swing.JFrame {
     
     private jpRepoBienes objRepoBienes = new jpRepoBienes();
     private jpRepoLibroBienes objRepoLibroBienes = new jpRepoLibroBienes();
-    private JpRepoImpresionCargosV2 objRepoCargos = new JpRepoImpresionCargosV2();
+    private RepoCargos objRepoCargos = new RepoCargos();
     private JpRepoInfAuditoria objRepoAuditoria = new JpRepoInfAuditoria();
     
     
@@ -51,8 +51,8 @@ public class MainMdi extends javax.swing.JFrame {
         jifFormBien.setContentPane(objFormBien);
         objFormBien.setMiparent(this);
         objFormBien.setUser(this.user);
-        objFormBien.setSize(800,450);
-        jifFormBien.setSize(800, 450);
+        objFormBien.setSize(900,500);
+        jifFormBien.setSize(900,500);
         
         jifFormBajaBien.setContentPane(objFormBajaBien);
         objFormBajaBien.setParent(this);   
@@ -97,7 +97,7 @@ public class MainMdi extends javax.swing.JFrame {
         jifRepoLibroBienes.setSize(1100,350);
         
         jifRepoCargos.setContentPane(objRepoCargos);
-        objRepoCargos.setparent(this);   
+        objRepoCargos.setParent(this);   
         objRepoCargos.setSize(550,450);
         jifRepoCargos.setSize(550,450);
         

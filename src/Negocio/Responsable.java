@@ -19,7 +19,7 @@ public class Responsable implements Serializable{
     @Basic
     private String estado;
     @Basic
-    private boolean baja;    
+    private boolean baja;
     @Basic
     private String cargo;
     @ManyToOne
@@ -120,6 +120,8 @@ public class Responsable implements Serializable{
     public void setSector(Sector sector) {
         this.sector = sector;
     }
+    
+    
     
     
     public void modificarDatos(String unNombre, String unDni,String cargo, Sector unSector){

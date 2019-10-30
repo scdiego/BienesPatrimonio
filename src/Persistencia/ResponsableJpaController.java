@@ -5,6 +5,8 @@ import Negocio.Responsable;
 import Negocio.Sector;
 import Persistencia.exceptions.NonexistentEntityException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -80,6 +82,7 @@ public class ResponsableJpaController implements Serializable {
         salida = this.findResponsableByNombre(unNombre);
         unSector = daoSector.obtenerSector(unNombreSector);
         if(salida == null){
+            salida = new Responsable();
             salida.setBaja(false);
             salida.setNombre(unNombre);
             salida.setSector(unSector);
@@ -218,6 +221,18 @@ public class ResponsableJpaController implements Serializable {
         String q = "SELECT r FROM Responsable r WHERE r.sector = :sector";
         Query query = em.createQuery(q).setParameter("sector", sector);
         return query.getResultList();    
+    }
+    
+    public ArrayList<String> arrayResponsables(){
+        ArrayList responsables = new ArrayList();
+        List<Responsable> resp = this.findResponsableEntities();
+        
+            Iterator<Responsable> it = resp.iterator();
+            while (it.hasNext()) {
+                responsables.add(it.next().getNombre());
+            }
+         return responsables;
+        
     }
     
 }

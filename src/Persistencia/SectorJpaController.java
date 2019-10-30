@@ -1,9 +1,12 @@
 
 package Persistencia;
 
+import Negocio.Responsable;
 import Negocio.Sector;
 import Persistencia.exceptions.NonexistentEntityException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
@@ -142,6 +145,17 @@ public class SectorJpaController implements Serializable {
         } finally {
             em.close();
         }
+    }
+    
+     public ArrayList<String> arraySectores(){
+        ArrayList sectores = new ArrayList();
+        List<Sector> sec = this.findSectorEntities();
+        
+            Iterator<Sector> it = sec.iterator();
+            while (it.hasNext()) {
+                sectores.add(it.next().getNombre());
+            }
+         return sectores;
     }
     
     public void update(Sector sector, Integer id) throws NonexistentEntityException {

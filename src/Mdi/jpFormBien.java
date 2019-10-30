@@ -8,24 +8,37 @@ package Mdi;
 import Negocio.Asignacion;
 import Negocio.Bien;
 import Negocio.Responsable;
+import Negocio.Sector;
 import Negocio.Usuario;
 import Persistencia.BienJpaController;
 import Persistencia.ResponsableJpaController;
+import Persistencia.SectorJpaController;
+import Persistencia.AsignacionJpaController;
 import Persistencia.exceptions.NonexistentEntityException;
 import Presentacion.CtrlVista;
 import Presentacion.FrmCargo;
+import Presentacion.FrmLibroBienes;
+import Reportes.AbsJasperReports;
 import Utilidades.FechaHora;
 import Utilidades.ImprimirEtiqueta;
 import Utilidades.formatoBigDecimal;
 import com.sun.glass.events.KeyEvent;
+import dbConn.Conexion;
+import java.awt.EventQueue;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -44,13 +57,37 @@ public class jpFormBien extends javax.swing.JPanel {
     private MainMdi miparent;
     private BienJpaController dao = new BienJpaController();
     private Usuario user;
+    private Responsable unResponsable;
+    
+    SectorJpaController sectorDao = new SectorJpaController();
+    AsignacionJpaController asignacionDao = new AsignacionJpaController();
+    ResponsableJpaController responsableDao = new ResponsableJpaController();
+    
+    private boolean asignar = false;
+    Connection conn;
+    
+    ArrayList respon = new ArrayList();
+    ArrayList areas = new ArrayList();
     /**
      * Creates new form jpFormBien
      */
     public jpFormBien() {
         initComponents();
-        this.cargarUltimo();
+        //this.cargarUltimo();
+       
+        try {             
+             conn = Conexion.obtener();
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(FrmLibroBienes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        respon = responsableDao.arrayResponsables();
+        areas = sectorDao.arraySectores();
+        this.completarResponsalbe();
+        this.completarArea();
+        this.ultimo();
     }
+    
+  // video del autocomplete
 
     public JFrame getMiparent() {
         return miparent;
@@ -75,7 +112,7 @@ public class jpFormBien extends javax.swing.JPanel {
         this.setUser(user);
     }
     
-    
+
     
     private void fillBienesList() {
         modeloBienes.clear();
@@ -218,17 +255,63 @@ public class jpFormBien extends javax.swing.JPanel {
       return false;
    }
 }
+
+    
+    private Asignacion getAsignacionFromForm(Responsable unResponsable, Responsable unSubResponsable,Bien unBien) {
+         
+        String strDate = new SimpleDateFormat("yyyy-dd-MM").format(Calendar.getInstance().getTime());
+        java.util.Date fechaDesde = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM");
+            fechaDesde = sdf.parse(strDate);
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(this, 
+                    "El formato de la fecha es incorrecto",
+                    "Algo salió mal", 
+                    JOptionPane.WARNING_MESSAGE);
+            Logger.getLogger(FrmCargo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new Asignacion(unResponsable, unBien, fechaDesde, unSubResponsable);
+    }
     
     private void crearBien() {
         if(this.camposRequeridos()){
             Bien bn = getBienFromForm();
             dao.create(bn,this.getUser());
+            java.util.Date fechaDesde = null;
+            String strDate = new SimpleDateFormat("yyyy-dd-MM").format(Calendar.getInstance().getTime());
+            /*Creo asignacion */
+            
+            if(asignar){
+            String nombreResponsable = this.txtResponsable.getSelectedItem().toString();
+            String nombreArea = this.txtArea.getSelectedItem().toString();
+            String nombreSubResponsable = this.txtSubResponsable.getSelectedItem().toString();
+            if(nombreResponsable != ""){
+               try { 
+                
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM");
+                fechaDesde = sdf.parse(strDate);
+                 } catch (ParseException ex) {
+                  JOptionPane.showMessageDialog(this, 
+                    "El formato de la fecha es incorrecto",
+                    "Algo salió mal", 
+                    JOptionPane.WARNING_MESSAGE);   
+                 }
+                Responsable unSubResponsable = responsableDao.findResponsableByNombre(nombreSubResponsable);
+                Asignacion unaAsignacion = new Asignacion(unResponsable,bn, fechaDesde, unSubResponsable);
+                asignacionDao.create(unaAsignacion,this.user,bn);
+                this.jButton2.setEnabled(true);
+                //Responsable responsable, Bien bien, Date fechaDesde, Responsable subResponsable
+            }
+            }
+            
             //logica.crearBien(unCodigo,unNroInventario,unaDescripcion,unaFechaAlta,unNroActa,unValor,unNroExpedienteAlta,unaResolucionAlta); 
             this.fillBienesList();
             habilitarTextos(false);
             limpiarComponentes();                   
             deshabilitarBotones();
-            habilitarBotones();                 
+            habilitarBotones(); 
+            this.cargarUltimo();
          }else{
             JOptionPane.showMessageDialog(null, "No se puede guardar la infomación.\nDebe completar los datos requeridos.");
        }
@@ -312,6 +395,11 @@ public class jpFormBien extends javax.swing.JPanel {
         this.txtNrodeInventario.setEnabled(habilitar);
         this.txtResolucion.setEnabled(habilitar);
         this.txtValor.setEnabled(habilitar);        
+        this.txtResponsable.setEnabled(habilitar); 
+        this.txtArea.setEnabled(habilitar); 
+        this.txtSubResponsable.setEnabled(habilitar); 
+        
+        
     }
     public final void limpiarComponentes(){
         this.txtCodigo.setText(null);
@@ -322,13 +410,15 @@ public class jpFormBien extends javax.swing.JPanel {
         this.txtNrodeInventario.setText(null);
         this.txtResolucion.setText(null);
         this.txtValor.setText(null);
-        this.txtResponsable.setText(null);
-        this.txtSubResponsable.setText(null);
-        this.txtArea.setText(null);
+        this.txtResponsable.setSelectedItem("Seleccione un Responsable");
+        this.txtSubResponsable.setSelectedItem("Seleccione un Responsable");
+        this.txtArea.setSelectedItem("Seleccione Sector");
       //  this.txtResolucionBaja.setText(null);
       //  this.txtFechaBaja.setText(null);
        
     }
+    
+
     public final void activarBM(boolean activar){
         this.btnEliminar.setEnabled(activar);
         this.btbModificar.setEnabled(activar);      
@@ -360,6 +450,12 @@ public class jpFormBien extends javax.swing.JPanel {
         this.completarTextos();        
     }
     public final void completarTextos(){
+        this.txtResponsable.setSelectedItem("Seleccione un Responsable");
+        this.txtSubResponsable.setSelectedItem("Seleccione un Responsable");
+        this.txtArea.setSelectedItem("Seleccione Sector");
+        this.txtFechaBaja.setText(null);
+        this.txtResolucionBaja.setText(null);
+
         if(this.unBien.getCodigo() != null){
             this.txtCodigo.setText(this.unBien.getCodigo());
         }
@@ -407,13 +503,46 @@ public class jpFormBien extends javax.swing.JPanel {
     }
     
     public void competarTextosCargos(){
+        Responsable unResponsable ;
+        Sector unSector;
+        Responsable unSubResponsable;
+        this.jButton2.setEnabled(false);
         try{
-            this.txtResponsable.setText(this.unBien.responsableAsignado().getNombre());
-            this.txtArea.setText(this.unBien.responsableAsignado().getSector().getNombre());
+            unResponsable = this.unBien.responsableAsignado();
+            unSector = unResponsable.getSector();
+            unSubResponsable = this.unBien.SubresponsableAsignado();
+            
+            //this.txtResponsable.setSelectedItem(unResponsable.getNombre()); //.setText(this.unBien.responsableAsignado().getNombre());
+            this.txtResponsable.setSelectedItem(unResponsable.getNombre());//.setText(unResponsable.getNombre());
+            
+            this.txtArea.setSelectedItem(unSector.getNombre());//.setText(unSector.getNombre());  
+            this.txtSubResponsable.setSelectedItem(this.unBien.SubresponsableAsignado().getNombre());
+
         }catch (NullPointerException e){
-            //nada
+           //int respuesta = JOptionPane.showConfirmDialog(null, "Error al completar texto cargos", "Confirmación", JOptionPane.YES_NO_OPTION);
+           // this.jButton2.setEnabled(false);
+        }
+        String s1 = this.txtResponsable.getSelectedItem().toString(); //.setSelectedItem("Seleccione un Responsable");
+        String s3 = this.txtArea.getSelectedItem().toString();//.setSelectedItem("Seleccione Sector");
+        if(!s1.equals("Seleccione un Responsable") || !s3.equals("Seleccione Sector")){
+            this.jButton2.setEnabled(true);
         }
  
+    }
+    
+    public void completarResponsalbe(){
+        //respon
+        int i ;
+        for (i=0;i < respon.size();i++){
+            this.txtResponsable.addItem(respon.get(i).toString());
+            this.txtSubResponsable.addItem(respon.get(i).toString());            
+        }
+    }
+    public void completarArea(){
+        int i ;
+        for (i=0;i < areas.size();i++){
+            this.txtArea.addItem(areas.get(i).toString());
+        } 
     }
     public final void activarBotonesSeleccion(){
        /*     this.activarBM(true);
@@ -453,8 +582,10 @@ public class jpFormBien extends javax.swing.JPanel {
 
     
     public void guardarAsignacion(){
-        String responsabletxt = this.txtResponsable.getText();
-        String sectorTxt = this.txtArea.getText();
+       
+        String responsabletxt = txtResponsable.getSelectedItem().toString();
+        String sectorTxt = txtArea.getSelectedItem().toString();
+        
         ResponsableJpaController daoResponsable = new ResponsableJpaController();
         Responsable responsable = daoResponsable.ObtenerResponsalble(responsabletxt,sectorTxt);
         
@@ -471,13 +602,62 @@ public class jpFormBien extends javax.swing.JPanel {
             Logger.getLogger(FrmCargo.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        Asignacion  asig = new Asignacion(responsable, this.unBien, fechaDesde, null);
+        Asignacion  asig = new Asignacion(unResponsable, this.unBien, fechaDesde, null);
+    }
+    
+    public void imprimirCargo(){
+        String reportName = "PlanilladeCargo";
+        String nroInventario = this.unBien.getNroInv();
+        
+        String dni = "";
+        try{
+            dni = this.asignacionDao.findResponsableByNroInventario(Integer.parseInt(nroInventario)).getDni();
+        }
+        catch(NullPointerException e){
+            dni = "";
+        }
+        
+        String nombreResponsable = "";        
+        try{
+            nombreResponsable = this.asignacionDao.findResponsableByNroInventario(Integer.parseInt(nroInventario)).getApeyNom();
+        }catch(NullPointerException e){
+            nombreResponsable = "";
+        }
+        String sector = "que poner";
+        
+        try{
+            sector = this.asignacionDao.findSectorByNroInventario(Integer.parseInt(nroInventario)).getNombre();        
+        }catch(NullPointerException e){
+            sector = "nada";
+        }
+        String estado = this.unBien.getEstado();
+        
+        FechaHora mifecha = new FechaHora();
+        
+        String fecha = " ,"  + mifecha.diaActual()+ " de "+ mifecha.mesActual() + " del " + mifecha.anioActual();
+        
+        Map<String,Object> parametros = new HashMap();
+        
+        parametros.put("nroInventario", nroInventario);
+        parametros.put("dni",dni);
+        parametros.put("nombreResponsable",nombreResponsable);
+        parametros.put("sector",sector);
+        parametros.put("estado",estado);
+        parametros.put("fecha",fecha);
+        
+        parametros.put("ruta","/home/diego/proyectos/PatrimonioGitCC/src/Reportes/");       
+        //String vpath = System.getenv().get("RUTAREPORTES")+"/"+reportName+".jasper";        
+        
+        String vpath = "/home/diego/proyectos/PatrimonioGitCC/src/Reportes/"+reportName+".jasper";
+        
+        AbsJasperReports.createReport(conn, vpath,parametros);
+        AbsJasperReports.showViewer();
     }
 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * regenerated by the Form Editor.nro
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -513,13 +693,14 @@ public class jpFormBien extends javax.swing.JPanel {
         btnGuardar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
+        panelText = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
-        txtResponsable = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        txtSubResponsable = new javax.swing.JTextField();
-        txtArea = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
+        txtResponsable = new javax.swing.JComboBox<>();
+        txtArea = new javax.swing.JComboBox<>();
+        txtSubResponsable = new javax.swing.JComboBox<>();
         jPanel5 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         txtResolucionBaja = new javax.swing.JTextField();
@@ -759,7 +940,6 @@ public class jpFormBien extends javax.swing.JPanel {
         });
 
         jButton1.setText("Imprimir Etiqueta");
-        jButton1.setEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -807,53 +987,76 @@ public class jpFormBien extends javax.swing.JPanel {
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Responsable"));
+        panelText.setBorder(javax.swing.BorderFactory.createTitledBorder("Responsable"));
 
         jLabel10.setText("Responsable");
-
-        txtResponsable.setEnabled(false);
 
         jLabel11.setText("Área");
 
         jLabel1.setText("Sub Responsable");
 
-        txtSubResponsable.setEnabled(false);
-        txtSubResponsable.setName("txtSubResponsable"); // NOI18N
+        jButton2.setText("Imprimir Cargo");
+        jButton2.setEnabled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
-        txtArea.setEnabled(false);
-        txtArea.setName("txtArea"); // NOI18N
+        txtResponsable.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un Responsable" }));
+        txtResponsable.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtResponsableFocusLost(evt);
+            }
+        });
+        txtResponsable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtResponsableMouseClicked(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(txtArea, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtSubResponsable, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtResponsable, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        txtArea.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un Area" }));
+
+        txtSubResponsable.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un Sub Responsable" }));
+
+        javax.swing.GroupLayout panelTextLayout = new javax.swing.GroupLayout(panelText);
+        panelText.setLayout(panelTextLayout);
+        panelTextLayout.setHorizontalGroup(
+            panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelTextLayout.createSequentialGroup()
+                .addGroup(panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelTextLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panelTextLayout.createSequentialGroup()
+                        .addGroup(panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(txtResponsable, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtArea, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtSubResponsable, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        panelTextLayout.setVerticalGroup(
+            panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelTextLayout.createSequentialGroup()
+                .addGroup(panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(txtResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
                     .addComponent(txtArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtSubResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(1, 1, 1))
+                .addGroup(panelTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtSubResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Baja"));
@@ -877,7 +1080,7 @@ public class jpFormBien extends javax.swing.JPanel {
                     .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtResolucionBaja, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                    .addComponent(txtResolucionBaja, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
                     .addComponent(txtFechaBaja))
                 .addContainerGap())
         );
@@ -898,29 +1101,29 @@ public class jpFormBien extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(443, Short.MAX_VALUE)
+                .addContainerGap(466, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(378, Short.MAX_VALUE)))
+                    .addContainerGap(450, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(18, 18, 18))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
@@ -947,6 +1150,7 @@ public class jpFormBien extends javax.swing.JPanel {
             String nro = this.txtNrodeInventario.getText();
             if(!"".equals(nro)){
                 this.buscar();
+                this.completarTextos();
 
             }else{
                 JOptionPane.showMessageDialog(null, "Ingrese un Nro de Inventario.");
@@ -983,6 +1187,7 @@ public class jpFormBien extends javax.swing.JPanel {
         this.btnGuardar.setEnabled(true);
         this.btnNuevo.setEnabled(false);
         this.btnSalir.setEnabled(true);
+        this.jButton2.setEnabled(false);
         this.nuevoBien=true;
         this.limpiarComponentes();
     }//GEN-LAST:event_btnNuevoActionPerformed
@@ -1023,7 +1228,7 @@ public class jpFormBien extends javax.swing.JPanel {
             modificarBien();
         }
         
-        this.guardarAsignacion();
+       // this.guardarAsignacion();
         
         this.txtNrodeInventario.setEnabled(true);
 
@@ -1039,6 +1244,23 @@ public class jpFormBien extends javax.swing.JPanel {
         impresora.imprimir(this.unBien.getNroInv().toString());
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        this.imprimirCargo();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void txtResponsableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtResponsableMouseClicked
+        // TODO add your handling code here:
+        unResponsable = responsableDao.findResponsableByNombre(txtResponsable.getSelectedItem().toString());
+        asignar = true;
+    }//GEN-LAST:event_txtResponsableMouseClicked
+
+    private void txtResponsableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtResponsableFocusLost
+        // TODO add your handling code here:
+        unResponsable = responsableDao.findResponsableByNombre(txtResponsable.getSelectedItem().toString());
+        asignar = true;
+    }//GEN-LAST:event_txtResponsableFocusLost
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btbModificar;
@@ -1048,6 +1270,7 @@ public class jpFormBien extends javax.swing.JPanel {
     private javax.swing.JButton btnNuevo;
     private javax.swing.JButton btnSalir;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -1066,11 +1289,11 @@ public class jpFormBien extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField txtArea;
+    private javax.swing.JPanel panelText;
+    private javax.swing.JComboBox<String> txtArea;
     private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextArea txtDescripcion;
     private javax.swing.JFormattedTextField txtFechaAlta;
@@ -1080,8 +1303,8 @@ public class jpFormBien extends javax.swing.JPanel {
     private javax.swing.JTextField txtNrodeInventario;
     private javax.swing.JTextField txtResolucion;
     private javax.swing.JTextField txtResolucionBaja;
-    private javax.swing.JTextField txtResponsable;
-    private javax.swing.JTextField txtSubResponsable;
+    private javax.swing.JComboBox<String> txtResponsable;
+    private javax.swing.JComboBox<String> txtSubResponsable;
     private javax.swing.JFormattedTextField txtValor;
     // End of variables declaration//GEN-END:variables
 }

@@ -8,6 +8,7 @@ import Negocio.Usuario;
 import Negocio.exceptions.NonexistentEntityException;
 import Utilidades.ConsultasDB;
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -31,12 +32,39 @@ public class AsignacionJpaController implements Serializable {
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
+    public void desasignar(Bien unBien,java.util.Date fecha){
+           
+            EntityManager em = null;
+            try{
+            em = getEntityManager();
+            em.getTransaction().begin();
+
+            
+            StoredProcedureQuery sp = em.createStoredProcedureQuery("CIERRA_ASIGNACION");
+            sp.registerStoredProcedureParameter("IDBIEN", Integer.class, ParameterMode.IN);
+
+            sp.setParameter("IDBIEN", unBien.getId());
+            sp.execute();
+            
+            
+            
+            em.getTransaction().commit();
+        } finally {
+            if (em != null) { 
+                em.close();
+            }
+    }
+    }
 
     public void create(Asignacion asignacion, Usuario user, Bien bien) {
         EntityManager em = null;
         try {
+            
+            this.desasignar(bien,asignacion.getFechaDesde());
             em = getEntityManager();
             em.getTransaction().begin();
+            
+
             em.persist(asignacion);
             
             StoredProcedureQuery sp = em.createStoredProcedureQuery("SP_AUDITOR");

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Planilla de  Cargos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="50" rightMargin="10" topMargin="20" bottomMargin="20" uuid="a9b8841c-5d2b-41ac-bd49-9eeb5155a9f8">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Planilla de  Cargos" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="535" leftMargin="50" rightMargin="10" topMargin="20" bottomMargin="20" uuid="a9b8841c-5d2b-41ac-bd49-9eeb5155a9f8">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="117"/>
 	<parameter name="NOMBRERESPONSABLE" class="java.lang.String"/>
-	<parameter name="idReport" class="java.lang.Integer"/>
+	<parameter name="idResponsable" class="java.lang.Integer"/>
 	<parameter name="ruta" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[CALL listarCargos($P{idReport})]]>
+		<![CDATA[SELECT LPAD( NROINVENTARIO, 6, '0' ) as NROINVENTARIO,BIEN.DESCRIPCION,BIEN.ESTADO
+FROM BIEN INNER JOIN ASIGNACION ON BIEN.ID = ASIGNACION.BIEN_ID
+INNER JOIN RESPONSABLE ON ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID
+WHERE RESPONSABLE.ID = $P{idResponsable}
+ORDER BY BIEN.NROINVENTARIO]]>
 	</queryString>
 	<field name="NROINVENTARIO" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -20,9 +24,14 @@
 	</field>
 	<variable name="fecha" class="java.lang.String">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
+		<initialValueExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></initialValueExpression>
 	</variable>
 	<variable name="leyenda" class="java.lang.String">
 		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="Titulo" class="java.lang.String">
+		<variableExpression><![CDATA["PLANILLA DE CARGOS AL "]]></variableExpression>
+		<initialValueExpression><![CDATA["PLANILLA DE CARGOS AL " + $V{fecha}]]></initialValueExpression>
 	</variable>
 	<background>
 		<band splitType="Stretch"/>
@@ -61,13 +70,6 @@
 				<reportElement x="1" y="107" width="534" height="1" uuid="aec151df-f658-43a4-92ae-82f7fec682e4"/>
 			</line>
 			<staticText>
-				<reportElement x="1" y="49" width="534" height="20" uuid="f6d0d98d-ed96-4acc-bdbe-ce23f4897f8a"/>
-				<textElement textAlignment="Center">
-					<font size="14" isBold="true"/>
-				</textElement>
-				<text><![CDATA[PLANILLA DE CARGOS]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="1" y="69" width="88" height="15" uuid="11afb486-ea49-406f-b865-4dd6d149b2ef"/>
 				<textElement textAlignment="Left">
 					<font isBold="true"/>
@@ -77,6 +79,13 @@
 			<textField>
 				<reportElement x="88" y="69" width="355" height="15" uuid="e8e5a41e-f782-45d0-abc3-f93578511c98"/>
 				<textFieldExpression><![CDATA[$P{NOMBRERESPONSABLE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="49" width="532" height="20" uuid="bc3b5ae5-00ed-4d6f-9728-2e90093e007d"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Titulo}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -122,4 +131,61 @@
 	<summary>
 		<band splitType="Stretch"/>
 	</summary>
+	<noData>
+		<band height="292">
+			<image hAlign="Center">
+				<reportElement stretchType="RelativeToBandHeight" x="-1" y="0" width="535" height="49" uuid="c889aaaa-25b9-40c9-ae2f-3718fadde64d"/>
+				<imageExpression><![CDATA[$P{ruta}+"header.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="0" y="92" width="88" height="15" uuid="302f4c44-db81-4873-85ce-2f5526f7a261"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INVENTARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="69" width="88" height="15" uuid="060a1dd6-07a5-4d98-8639-d89e5aaf2d55"/>
+				<textElement textAlignment="Left">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESPONSABLE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="447" y="92" width="86" height="15" uuid="f4225598-18b0-4078-92c4-f8da0f3718a6"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ESTADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="92" y="92" width="355" height="15" uuid="018f7533-9ca5-4530-8a18-7d090dfa0f33"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCION]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="92" y="69" width="355" height="15" uuid="740e6f34-2c0a-4605-b7a9-9b476e234387"/>
+				<textFieldExpression><![CDATA[$P{NOMBRERESPONSABLE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="107" width="534" height="1" uuid="25bc2655-87e5-41ee-8f70-665bdcd77f63"/>
+			</line>
+			<staticText>
+				<reportElement x="1" y="108" width="534" height="20" uuid="bda7d3f7-e9f8-447b-8bcf-c5cc381e6d60"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No se registran cargos para este LEGAJO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="49" width="532" height="20" uuid="7a020bbd-5aa8-41c8-a949-afe288abc1f1"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Titulo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
 </jasperReport>
