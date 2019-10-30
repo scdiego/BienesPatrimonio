@@ -38,6 +38,7 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
     public ArrayList<Bien> listadeBienes = new ArrayList();
     public  HashMap listaBienes;
     public int indice;
+    public ArrayList<String> listaImprimir = new ArrayList();
 
      
     public FrmImpresionEtiquetas() {
@@ -133,6 +134,7 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
                 this.limpiarComponentes();
                 if(lista.size() > 0){
                     this.unBien = lista.get(0);
+                    this.listaImprimir.add(unBien.getNroInventario().toString());
                     this.agregarAlGrid();
             //this.b
                 }else{
@@ -276,11 +278,21 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
     private void BtnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnImprimirActionPerformed
         // TODO add your handling code here:
         ImprimirEtiqueta impresora = new ImprimirEtiqueta();
-        impresora.setListaBienes(listaBienes);
-        impresora.imprimirLista();
+        //impresora.setListaBienes(listaBienes);
+        //impresora.imprimirLista();
         this.listadeBienes.clear();
         this.listaBienes.clear();
         this.limpiarGrid();
+        
+        int i;
+        for(i=0; i <= this.listaImprimir.size();i++){
+            impresora.imprimir(this.listaImprimir.get(i));
+        }
+        this.listadeBienes.clear();
+        this.listaBienes.clear();
+        this.listaImprimir.clear();
+        this.limpiarGrid();
+        
     }//GEN-LAST:event_BtnImprimirActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
