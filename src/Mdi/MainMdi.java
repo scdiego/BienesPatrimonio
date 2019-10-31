@@ -30,6 +30,7 @@ public class MainMdi extends javax.swing.JFrame {
     private FrmCvsImport objFrmImportCvs = new FrmCvsImport();
     private FrmImpresionEtiquetas objFrmImpresionEtiquetas = new FrmImpresionEtiquetas();
     
+    
 
     
     private jpRepoBienes objRepoBienes = new jpRepoBienes();
