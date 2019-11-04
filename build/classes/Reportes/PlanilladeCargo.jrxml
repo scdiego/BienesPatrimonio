@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Planilla de  Cargos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="50" rightMargin="10" topMargin="20" bottomMargin="20" uuid="a9b8841c-5d2b-41ac-bd49-9eeb5155a9f8">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="10"/>
+	<parameter name="ruta" class="java.lang.String"/>
+	<parameter name="nroInventario" class="java.lang.String"/>
+	<parameter name="dni" class="java.lang.String"/>
+	<parameter name="nombreResponsable" class="java.lang.String"/>
+	<parameter name="sector" class="java.lang.String"/>
+	<parameter name="estado" class="java.lang.String"/>
+	<parameter name="fecha" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT DESCRIPCION FROM BIEN WHERE NROINVENTARIO = $P{nroInventario}]]>
+	</queryString>
+	<field name="DESCRIPCION" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="fecha" class="java.lang.String">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+		<initialValueExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></initialValueExpression>
+	</variable>
+	<variable name="leyenda" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="pie" class="java.lang.String">
+		<variableExpression><![CDATA["Responsable " + $P{nombreResponsable} + " DNI " + $P{dni}]]></variableExpression>
+	</variable>
+	<variable name="pie2" class="java.lang.String">
+		<variableExpression><![CDATA["Posadas " + $P{fecha} + " Cargo "]]></variableExpression>
+	</variable>
+	<variable name="titulo" class="java.lang.String">
+		<variableExpression><![CDATA["PLANILLA DE CARGO AL" + $V{fecha}]]></variableExpression>
+		<initialValueExpression><![CDATA["PLANILLA DE CARGO AL  " + $V{fecha}]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="108" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="92" width="88" height="15" uuid="38e44f64-8261-4747-b4a6-0c535c1910f5"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INVENTARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="92" width="355" height="15" uuid="ba58edcf-893d-4cd0-b25d-e27b4a736e78"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="443" y="92" width="92" height="15" uuid="79a680d7-ddb2-43ce-8738-23e1e2027e5c"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ESTADO]]></text>
+			</staticText>
+			<image hAlign="Center">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="535" height="49" uuid="f22a729b-8b73-4065-a58a-7b1fec388ca8"/>
+				<imageExpression><![CDATA[$P{ruta}+"header.png"]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="1" y="107" width="534" height="1" uuid="aec151df-f658-43a4-92ae-82f7fec682e4"/>
+			</line>
+			<textField>
+				<reportElement x="247" y="72" width="288" height="20" uuid="e362fab4-0c1a-414b-b2ff-1da70fbc4b5d"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$P{sector}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="49" width="534" height="20" uuid="04df42a2-2fdd-48a6-aa75-a671d535bd73"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{titulo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="1" y="2" width="87" height="20" uuid="3be8c15d-3482-4c97-901c-e5eaf986d609"/>
+				<textFieldExpression><![CDATA[$P{nroInventario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="443" y="2" width="92" height="20" uuid="7cb4dcd1-0221-4005-94f0-3051cfeea32e"/>
+				<textFieldExpression><![CDATA[$P{estado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="88" y="2" width="355" height="20" uuid="7a65e046-eca6-40c5-acb2-f88071e88e6b"/>
+				<textFieldExpression><![CDATA[$F{DESCRIPCION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="99" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="1" width="535" height="1" uuid="8c301506-ad21-43ef-b25f-99d92e6f464a"/>
+			</line>
+			<textField>
+				<reportElement x="0" y="2" width="535" height="20" uuid="dffae4c0-61ed-461e-b1bb-fe22a1d9bdc9"/>
+				<textFieldExpression><![CDATA[$V{pie}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="27" width="534" height="20" uuid="a049c43e-2627-45cc-9f62-c3ceea919f55"/>
+				<textFieldExpression><![CDATA[$V{pie2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="443" y="84" width="92" height="15" uuid="3140b648-37e5-463b-bff4-280f0924948c"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Firma]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

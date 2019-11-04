@@ -23,6 +23,7 @@ public class Conexion {
        String pass = System.getenv().get("PASSPATRIMONIO");
        
        /*
+       
        String server = "localhost";
        String db = "patrimonio";
        String user = "patrimonio";
