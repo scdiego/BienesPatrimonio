@@ -16,19 +16,19 @@ public class Conexion {
    
    public static Connection obtener() throws SQLException, ClassNotFoundException {
        
-       
+       /*
        String server = System.getenv().get("SERVERPATRIMONIO");
        String db = System.getenv().get("BASEPATRIMONIO");
        String user = System.getenv().get("USERPATRIMONIO"); 
        String pass = System.getenv().get("PASSPATRIMONIO");
+       */
        
-       /*
        
        String server = "localhost";
        String db = "patrimonio";
        String user = "patrimonio";
        String pass = "V4lh4ll$";
-       */
+       
        if (cnx == null) {
          try {
             Class.forName("com.mysql.jdbc.Driver");

@@ -278,12 +278,6 @@ public class FrmImpresionEtiquetas extends javax.swing.JPanel {
     private void BtnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnImprimirActionPerformed
         // TODO add your handling code here:
         ImprimirEtiqueta impresora = new ImprimirEtiqueta();
-        //impresora.setListaBienes(listaBienes);
-        //impresora.imprimirLista();
-        this.listadeBienes.clear();
-        this.listaBienes.clear();
-        this.limpiarGrid();
-        
         int i;
         for(i=0; i <= this.listaImprimir.size();i++){
             impresora.imprimir(this.listaImprimir.get(i));
