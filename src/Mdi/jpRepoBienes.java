@@ -74,6 +74,8 @@ public class jpRepoBienes extends javax.swing.JPanel {
     private static final int RESPONSABLE = 4;
     private static final int RANGO = 5;
     private static final int FECHA = 6;
+    private static final int DNI = 7;
+
   
   
     JDialog viewer = new JDialog (new JFrame(), "Reporte",true);
@@ -255,6 +257,22 @@ public class jpRepoBienes extends javax.swing.JPanel {
        Object[][] lista = consulta.ejcutarConsulta(sql, campos);
        mostrarConsulta(lista);
     }
+    public void findBydni(boolean baja){
+        ConsultasDB consulta = new ConsultasDB();
+        String dni = txtBusqueda.getText();
+        String sql = "SELECT LPAD( BIEN.NROINVENTARIO, 6, '0' ) as NROINVENTARIO,BIEN.DESCRIPCION,BIEN.ESTADO,RESPONSABLE.NOMBRE as RESPONSABLE,SECTOR.NOMBRE,DATE_FORMAT(BIEN.FECHAALTA,'%d/%m/%Y') as FECHAALTA " + " FROM ASIGNACION INNER JOIN BIEN ON ASIGNACION.BIEN_ID = BIEN.ID LEFT JOIN RESPONSABLE ON ASIGNACION.RESPONSABLE_ID = RESPONSABLE.ID LEFT JOIN SECTOR ON RESPONSABLE.SECTOR_ID = SECTOR.ID WHERE RESPONSABLE.DNI = '" + dni + "' AND ASIGNACION.fechaHasta is null  order by NROINVENTARIO";
+        this.parametros.put("sql", sql);
+        List<String> campos = new ArrayList();
+        campos.add("NROINVENTARIO");
+        campos.add("DESCRIPCION");
+        campos.add("ESTADO");
+        campos.add("RESPONSABLE");
+        campos.add("NOMBRE");
+        campos.add("FECHAALTA");
+        Object[][] lista = consulta.ejcutarConsulta(sql, campos);
+        mostrarConsulta(lista);
+
+    }
     private void findByResponsable(boolean baja) {
         ConsultasDB consulta = new ConsultasDB();
         String responsableStr = cmbResponsable.getSelectedItem().toString();
@@ -390,6 +408,10 @@ public class jpRepoBienes extends javax.swing.JPanel {
            case FECHA:
                findByFecha(this.baja);
                break;
+           case DNI:
+               findBydni(this.baja);
+               break;
+
             }                        
     }
     private void inicializarParametros(){
@@ -470,6 +492,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         fDesde = new javax.swing.JTextField();
         fHasta = new javax.swing.JTextField();
+        rdDni = new javax.swing.JRadioButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         gridBienes = new javax.swing.JTable();
 
@@ -550,6 +573,14 @@ public class jpRepoBienes extends javax.swing.JPanel {
 
         jLabel4.setText("Hasta");
 
+        grOpciones.add(rdDni);
+        rdDni.setText("Dni");
+        rdDni.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdDniActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -558,43 +589,39 @@ public class jpRepoBienes extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtBusqueda, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel1)
-                            .addComponent(jButton2)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButton1))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(nHasta, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-                                    .addComponent(Ndesde)
-                                    .addComponent(fDesde, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-                                    .addComponent(fHasta))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(rdSector)
                                 .addGap(49, 49, 49)
-                                .addComponent(cmbSector, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(cmbSector, 0, 138, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(rdResponsable)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(cmbResponsable, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(rdNroInventario)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(rdNroInventario)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(rdDescripcion))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel1)
+                                            .addComponent(jLabel2)
+                                            .addComponent(jLabel3)
+                                            .addComponent(jLabel4))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(nHasta)
+                                            .addComponent(Ndesde)
+                                            .addComponent(fDesde)
+                                            .addComponent(fHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addComponent(rdRangoInentario)
-                                    .addComponent(rdFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(rdFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(rdDescripcion)
+                                    .addComponent(rdDni))
                                 .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
@@ -603,10 +630,12 @@ public class jpRepoBienes extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rdNroInventario)
-                    .addComponent(rdDescripcion))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(rdNroInventario)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rdDescripcion)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(rdDni)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rdSector)
                     .addComponent(cmbSector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -634,7 +663,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(fHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)))
@@ -787,6 +816,15 @@ public class jpRepoBienes extends javax.swing.JPanel {
         this.nHasta.setEnabled(true);
     }//GEN-LAST:event_rdRangoInentarioActionPerformed
 
+    private void rdDniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdDniActionPerformed
+                // TODO add your handling code here:
+        filter = DNI;
+        this.reportName = "ListadoBienesDni";
+        txtBusqueda.setEnabled(true);
+        cmbSector.setEnabled(false);
+        cmbResponsable.setEnabled(false);
+    }//GEN-LAST:event_rdDniActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Ndesde;
@@ -806,6 +844,7 @@ public class jpRepoBienes extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField nHasta;
     private javax.swing.JRadioButton rdDescripcion;
+    private javax.swing.JRadioButton rdDni;
     private javax.swing.JRadioButton rdFecha;
     private javax.swing.JRadioButton rdNroInventario;
     private javax.swing.JRadioButton rdRangoInentario;

@@ -135,6 +135,13 @@ public class BienJpaController implements Serializable {
             sp.setParameter("bien", nro);
             sp.execute();
             
+            StoredProcedureQuery sp2 = em.createStoredProcedureQuery("SP_BAJAASIG");
+            sp2.registerStoredProcedureParameter("bien", Integer.class, ParameterMode.IN);
+            sp2.setParameter("bien", bien.getId());
+            sp2.execute();
+
+            
+            
             
             em.getTransaction().commit();
         }
